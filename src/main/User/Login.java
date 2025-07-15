@@ -6,6 +6,10 @@ import User.Components.RoundedPanel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 
 public class Login extends JFrame {
@@ -147,9 +151,55 @@ public class Login extends JFrame {
     }
 
     private void onLogin(ActionEvent evt) {
-        String credencial = credencialField.getText();
-        String contrasena = new String(passwordField.getPassword());
-        JOptionPane.showMessageDialog(this, "Credencial: " + credencial + "\nContraseña: " + contrasena);
+        String cedula = credencialField.getText().trim();
+        String contrasena = new String(passwordField.getPassword()).trim();
+
+        if (cedula.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (validarCredenciales(cedula, contrasena)) {
+            Usuario usuario = new Usuario(cedula);
+            Sesion.iniciarSesion(usuario);
+
+            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso\nBienvenido: " + cedula);
+            
+            // Aquí podrías abrir otra ventana (como dashboard o menú)
+            // new VentanaPrincipal().setVisible(true);
+            // dispose();
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Credencial o contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean validarCredenciales(String cedula, String contrasena) {
+        File archivo = new File("User/Model/usuarios.txt");
+
+        if (!archivo.exists()) {
+            JOptionPane.showMessageDialog(this, "Archivo de usuarios no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 2) {
+                    String cedulaArchivo = partes[0].trim();
+                    String passArchivo = partes[1].trim();
+
+                    if (cedula.equals(cedulaArchivo) && contrasena.equals(passArchivo)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error leyendo archivo de usuarios: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return false;
     }
 
     private void onRegister(ActionEvent evt) {

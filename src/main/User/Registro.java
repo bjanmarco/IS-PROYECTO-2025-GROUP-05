@@ -6,6 +6,12 @@ import User.Components.RoundedPanel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Registro extends JFrame {
 
@@ -154,17 +160,115 @@ public class Registro extends JFrame {
     }
 
     private void onRegister(ActionEvent evt) {
-        String credencial = credencialField.getText();
-        String pass = new String(passwordField.getPassword());
-        String confirm = new String(confirmarPasswordField.getPassword());
+        String cedula = credencialField.getText().trim();
+        String pass = new String(passwordField.getPassword()).trim();
+        String confirm = new String(confirmarPasswordField.getPassword()).trim();
+
+        if (cedula.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!esNumeroValido(cedula)) {
+            JOptionPane.showMessageDialog(this, "Cédula inválida. Debe estar entre 500.000 y 32.000.000", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!credencialExiste(cedula)) {
+            JOptionPane.showMessageDialog(this, "La cédula no está autorizada para registrarse", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (usuarioYaRegistrado(cedula)) {
+            JOptionPane.showMessageDialog(this, "La cédula ya está registrada en el sistema.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (!pass.equals(confirm)) {
             JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        JOptionPane.showMessageDialog(this, "Registro exitoso\nCredencial: " + credencial);
-        // Aquí podrías redirigir al login real si lo integras
+        // Registro exitoso: guardar en sesión
+        Usuario nuevoUsuario = new Usuario(cedula);
+        Sesion.iniciarSesion(nuevoUsuario);
+
+        JOptionPane.showMessageDialog(this, "¡Registro exitoso!\nBienvenido: " + cedula);
+
+        guardarUsuario(cedula, pass);
+
+        // Aquí podrías ir a la ventana principal
+        // new VentanaPrincipal().setVisible(true);
+        // dispose();
+    }
+
+    private boolean esNumeroValido(String cedulaStr) {
+        try {
+            int cedula = Integer.parseInt(cedulaStr);
+            return cedula >= 500_000 && cedula <= 32_000_000;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean credencialExiste(String cedula) {
+        File archivo = new File("User/Model/credenciales.txt"); // ajusta si está en otra ruta
+        if (!archivo.exists()) {
+            JOptionPane.showMessageDialog(this, "Archivo de credenciales no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                if (linea.trim().equals(cedula)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al leer credenciales: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return false;
+    }
+
+    private boolean usuarioYaRegistrado(String cedula) {
+        File archivo = new File("User/Model/usuarios.txt");
+
+        if (!archivo.exists()) {
+            return false; // Si no existe el archivo, no hay usuarios registrados aún
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length >= 1 && partes[0].trim().equals(cedula)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error leyendo usuarios: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return false;
+    }
+
+    private void guardarUsuario(String cedula, String contrasena) {
+        File archivo = new File("User/Model/usuarios.txt");
+
+        try (FileWriter writer = new FileWriter(archivo, true); // true = modo append
+            BufferedWriter bw = new BufferedWriter(writer)) {
+
+            bw.write(cedula + "," + contrasena);
+            bw.newLine();
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar el usuario: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void onVolverLogin(ActionEvent evt) {
