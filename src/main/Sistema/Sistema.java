@@ -13,6 +13,9 @@ public class Sistema extends JFrame {
     private JLabel titleLabel;
     private BotonAzul btnAdmin, btnUser;
 
+    private static final String ADMIN_PASS = "admin123"; // Contraseña del admin
+
+
     public Sistema() {
         setTitle("Sistema de Acceso");
         setSize(850, 560);
@@ -85,8 +88,30 @@ public class Sistema extends JFrame {
     }
 
     private void abrirLoginAdmin() {
-        new LoginAdmin();
-        dispose();
+        JPasswordField passwordField = new JPasswordField();
+        int option = JOptionPane.showConfirmDialog(
+            this,
+            passwordField,
+            "Ingrese la contraseña de administrador",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            String inputPass = new String(passwordField.getPassword());
+
+            if (inputPass.equals(ADMIN_PASS)) {
+                new LoginAdmin();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Contraseña incorrecta",
+                    "Acceso denegado",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
     }
 
     private void abrirLoginUsuario() {

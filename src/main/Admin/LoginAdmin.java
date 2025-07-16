@@ -160,7 +160,7 @@ public class LoginAdmin extends JFrame {
 
             JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso\nBienvenido Admin: " + cedula);
         } else {
-            JOptionPane.showMessageDialog(this, "Credencial o contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Credencial (O puedes estar colocando algo que no son numeros) o contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

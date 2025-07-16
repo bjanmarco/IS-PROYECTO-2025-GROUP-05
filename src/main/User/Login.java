@@ -1,6 +1,6 @@
 package User;
-import javax.swing.*;
 
+import javax.swing.*;
 import Components.BotonAzul;
 import Components.RoundedBorder;
 import Components.RoundedPanel;
@@ -8,11 +8,7 @@ import Sistema.Sistema;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
+import java.io.*;
 
 public class Login extends JFrame {
 
@@ -31,17 +27,14 @@ public class Login extends JFrame {
         setLocationRelativeTo(null);
         setLayout(null);
 
-        // Fondo azul
         getContentPane().setBackground(new Color(36, 136, 242));
         getContentPane().setLayout(null);
 
-        // Panel blanco con esquinas redondeadas
         formPanel = new RoundedPanel(20);
         formPanel.setBackground(Color.WHITE);
         formPanel.setLayout(null);
         getContentPane().add(formPanel);
 
-        // Componentes (declarados como atributos para reposicionar luego)
         titleLabel = new JLabel("Login");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         formPanel.add(titleLabel);
@@ -91,23 +84,20 @@ public class Login extends JFrame {
         volverMainButton.addActionListener(e -> volverAlMain());
         formPanel.add(volverMainButton);
 
-        // Layout dinámico
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
                 updateLayout();
             }
         });
 
-        setVisible(true); // Muy importante para que getWidth() y getHeight() funcionen
+        setVisible(true);
     }
 
     private void updateLayout() {
-        // Márgenes exteriores
         int topMargin = 40;
         int bottomMargin = 60;
         int sideMargin = 40;
 
-        // Redimensionar el panel blanco
         formPanel.setBounds(
             sideMargin,
             topMargin,
@@ -123,10 +113,7 @@ public class Login extends JFrame {
         int fieldHeight = 30;
         int spacing = 20;
 
-        // Altura total del bloque de elementos
         int totalFormHeight = 30 + spacing + fieldHeight + spacing + fieldHeight + spacing + 35 + spacing + 25;
-
-        // Punto de inicio vertical para centrar
         int startY = (formHeight - totalFormHeight) / 2;
 
         int centerXLabel = (formWidth / 2) - fieldWidth / 2 - labelWidth;
@@ -149,10 +136,8 @@ public class Login extends JFrame {
         noCuentaLabel.setBounds(centerXLabel, y, 150, 25);
         registerButton.setBounds(centerXField + 30, y, 160, 25);
 
-                // Botón "Volver al Menú Principal" abajo a la izquierda
-        int bottomY = formHeight - 50; // 50 píxeles desde el borde inferior
-        int leftX = 20; // 20 píxeles desde el borde izquierdo
-        
+        int bottomY = formHeight - 50;
+        int leftX = 20;
         volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
 
@@ -165,52 +150,50 @@ public class Login extends JFrame {
             return;
         }
 
-        if (validarCredenciales(cedula, contrasena)) {
-            Usuario usuario = new Usuario(cedula);
-            Sesion.iniciarSesion(usuario);
+        Usuario usuario = validarCredenciales(cedula, contrasena);
 
-            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso\nBienvenido: " + cedula);
-            
-            // Aquí podrías abrir otra ventana (como dashboard o menú)
+        if (usuario != null) {
+            Sesion.iniciarSesion(usuario);
+            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso\nBienvenido: " + usuario.getCedula());
             // new VentanaPrincipal().setVisible(true);
             // dispose();
-
         } else {
-            JOptionPane.showMessageDialog(this, "Credencial o contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Credencial (O puedes estar colocando algo que no son numeros) o contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private boolean validarCredenciales(String cedula, String contrasena) {
+    private Usuario validarCredenciales(String cedula, String contrasena) {
         File archivo = new File("User/Model/usuarios.txt");
 
         if (!archivo.exists()) {
             JOptionPane.showMessageDialog(this, "Archivo de usuarios no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return null;
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
-                if (partes.length == 2) {
+                if (partes.length >= 3) {
                     String cedulaArchivo = partes[0].trim();
                     String passArchivo = partes[1].trim();
+                    double saldo = Double.parseDouble(partes[2]);
 
                     if (cedula.equals(cedulaArchivo) && contrasena.equals(passArchivo)) {
-                        return true;
+                        return new Usuario(cedula, saldo);
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Error leyendo archivo de usuarios: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        return false;
+        return null;
     }
 
     private void onRegister(ActionEvent evt) {
-        new Registro();  // Abrimos la ventana de registro
-        dispose();       // Cerramos la actual    
+        new Registro();
+        dispose();
     }
 
     private void volverAlMain() {

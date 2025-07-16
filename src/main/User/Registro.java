@@ -176,7 +176,7 @@ public class Registro extends JFrame {
         }
 
         if (!esNumeroValido(cedula)) {
-            JOptionPane.showMessageDialog(this, "Cédula inválida. Debe estar entre 500.000 y 32.000.000", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cédula inválida. Debe estar entre 500.000 y 32.000.000,  o puedes estar colocando algo que no son numeros", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -197,7 +197,7 @@ public class Registro extends JFrame {
         }
 
         // Registro exitoso: guardar en sesión
-        Usuario nuevoUsuario = new Usuario(cedula);
+        Usuario nuevoUsuario = new Usuario(cedula, 0.0); // con saldo inicial
         Sesion.iniciarSesion(nuevoUsuario);
 
         JOptionPane.showMessageDialog(this, "¡Registro exitoso!\nBienvenido: " + cedula);
@@ -265,10 +265,11 @@ public class Registro extends JFrame {
     private void guardarUsuario(String cedula, String contrasena) {
         File archivo = new File("User/Model/usuarios.txt");
 
-        try (FileWriter writer = new FileWriter(archivo, true); // true = modo append
+        try (FileWriter writer = new FileWriter(archivo, true);
             BufferedWriter bw = new BufferedWriter(writer)) {
 
-            bw.write(cedula + "," + contrasena);
+            double saldoInicial = 0.0;
+            bw.write(cedula + "," + contrasena + "," + saldoInicial);
             bw.newLine();
 
         } catch (IOException e) {
