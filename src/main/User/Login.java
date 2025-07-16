@@ -1,6 +1,7 @@
 package User;
 import javax.swing.*;
 
+import Components.BotonAzul;
 import Components.RoundedBorder;
 import Components.RoundedPanel;
 
@@ -67,14 +68,7 @@ public class Login extends JFrame {
         passwordField.setFont(new Font("Arial", Font.BOLD, 14));
         formPanel.add(passwordField);
 
-        loginButton = new JButton("Iniciar sesión");
-        loginButton.setBorder(new RoundedBorder(25));
-        loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.setBackground(new Color(0, 153, 255));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setFocusPainted(false);
-        loginButton.setContentAreaFilled(true);
-        loginButton.setOpaque(true); 
+        loginButton = new BotonAzul("Iniciar sesión", new Dimension(180, 35));
         loginButton.addActionListener(this::onLogin);
         formPanel.add(loginButton);
 

@@ -1,6 +1,7 @@
 package User;
 import javax.swing.*;
 
+import Components.BotonAzul;
 import Components.RoundedBorder;
 import Components.RoundedPanel;
 
@@ -22,6 +23,7 @@ public class Registro extends JFrame {
     private JButton volverLoginButton;
     private JLabel titleLabel, credencialLabel, passwordLabel, confirmarLabel, volverLoginLabel;
     private RoundedPanel formPanel;
+    private BotonAzul volverMainButton;
 
     public Registro() {
         setTitle("Registro de cuenta");
@@ -78,14 +80,7 @@ public class Registro extends JFrame {
         confirmarPasswordField.setFont(new Font("Arial", Font.BOLD, 14));
         formPanel.add(confirmarPasswordField);
 
-        registerButton = new JButton("Registrarse");
-        registerButton.setBorder(new RoundedBorder(25));
-        registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.setBackground(new Color(0, 153, 255));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFocusPainted(false);
-        registerButton.setContentAreaFilled(true);
-        registerButton.setOpaque(true);
+        registerButton = new BotonAzul("Registrarse", new Dimension(180, 35));
         registerButton.addActionListener(this::onRegister);
         formPanel.add(registerButton);
 
@@ -101,6 +96,10 @@ public class Registro extends JFrame {
         volverLoginButton.setContentAreaFilled(false);
         volverLoginButton.addActionListener(this::onVolverLogin);
         formPanel.add(volverLoginButton);
+
+        volverMainButton = new BotonAzul("Volver al Menú Principal", new Dimension(200, 35));
+        volverMainButton.addActionListener(e -> volverAlMain());
+        formPanel.add(volverMainButton);
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
@@ -157,6 +156,9 @@ public class Registro extends JFrame {
 
         volverLoginLabel.setBounds(centerXLabel + 50, y, 140, 25); // o ajusta el ancho según convenga
         volverLoginButton.setBounds(centerXField + 30, y, 160, 25);
+
+        y = startY + 30 + spacing * 3 + fieldHeight * 2 + 35 + spacing;
+        volverMainButton.setBounds((formWidth - 200) / 2, y, 200, 35);
     }
 
     private void onRegister(ActionEvent evt) {
@@ -274,6 +276,11 @@ public class Registro extends JFrame {
     private void onVolverLogin(ActionEvent evt) {
         new Login();  // Abrimos la ventana de login
         dispose();    // Cerramos la actual
+    }
+
+    private void volverAlMain() {
+        new Sistema();
+        dispose();
     }
 
     public static void main(String[] args) {
