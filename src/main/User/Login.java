@@ -4,6 +4,7 @@ import javax.swing.*;
 import Components.BotonAzul;
 import Components.RoundedBorder;
 import Components.RoundedPanel;
+import Sistema.Sistema;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,6 +22,7 @@ public class Login extends JFrame {
     private JButton registerButton;
     private JLabel titleLabel, credencialLabel, passwordLabel, noCuentaLabel;
     private RoundedPanel formPanel;
+    private BotonAzul volverMainButton;
 
     public Login() {
         setTitle("Inicio de sesión");
@@ -85,6 +87,10 @@ public class Login extends JFrame {
         registerButton.addActionListener(this::onRegister);
         formPanel.add(registerButton);
 
+        volverMainButton = new BotonAzul("Volver al Menú Principal", new Dimension(200, 35));
+        volverMainButton.addActionListener(e -> volverAlMain());
+        formPanel.add(volverMainButton);
+
         // Layout dinámico
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
@@ -142,6 +148,12 @@ public class Login extends JFrame {
 
         noCuentaLabel.setBounds(centerXLabel, y, 150, 25);
         registerButton.setBounds(centerXField + 30, y, 160, 25);
+
+                // Botón "Volver al Menú Principal" abajo a la izquierda
+        int bottomY = formHeight - 50; // 50 píxeles desde el borde inferior
+        int leftX = 20; // 20 píxeles desde el borde izquierdo
+        
+        volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
 
     private void onLogin(ActionEvent evt) {
@@ -199,6 +211,11 @@ public class Login extends JFrame {
     private void onRegister(ActionEvent evt) {
         new Registro();  // Abrimos la ventana de registro
         dispose();       // Cerramos la actual    
+    }
+
+    private void volverAlMain() {
+        new Sistema();
+        dispose();
     }
 
     public static void main(String[] args) {

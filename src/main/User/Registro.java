@@ -1,6 +1,7 @@
 package User;
-import javax.swing.*;
 
+import javax.swing.*;
+import Sistema.Sistema;
 import Components.BotonAzul;
 import Components.RoundedBorder;
 import Components.RoundedPanel;
@@ -154,13 +155,16 @@ public class Registro extends JFrame {
         registerButton.setBounds(centerXField, y, fieldWidth, 35);
         y += 35 + spacing;
 
-        volverLoginLabel.setBounds(centerXLabel + 50, y, 140, 25); // o ajusta el ancho según convenga
+        // Botones de login centrados después del botón de registro
+        volverLoginLabel.setBounds(centerXLabel + 50, y, 140, 25);
         volverLoginButton.setBounds(centerXField + 30, y, 160, 25);
 
-        y = startY + 30 + spacing * 3 + fieldHeight * 2 + 35 + spacing;
-        volverMainButton.setBounds((formWidth - 200) / 2, y, 200, 35);
+        // Botón "Volver al Menú Principal" abajo a la izquierda
+        int bottomY = formHeight - 50; // 50 píxeles desde el borde inferior
+        int leftX = 20; // 20 píxeles desde el borde izquierdo
+        
+        volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
-
     private void onRegister(ActionEvent evt) {
         String cedula = credencialField.getText().trim();
         String pass = new String(passwordField.getPassword()).trim();

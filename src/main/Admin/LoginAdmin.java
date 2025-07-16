@@ -2,6 +2,8 @@ package Admin;
 
 import Components.RoundedBorder;
 import Components.RoundedPanel;
+import Sistema.Sistema;
+import Components.BotonAzul;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +21,7 @@ public class LoginAdmin extends JFrame {
     private JButton registerButton;
     private JLabel titleLabel, credencialLabel, passwordLabel, noCuentaLabel;
     private RoundedPanel formPanel;
+    private BotonAzul volverMainButton;
 
     public LoginAdmin() {
         setTitle("Inicio de sesión - Admin");
@@ -63,14 +66,7 @@ public class LoginAdmin extends JFrame {
         passwordField.setFont(new Font("Arial", Font.BOLD, 14));
         formPanel.add(passwordField);
 
-        loginButton = new JButton("Iniciar sesión");
-        loginButton.setBorder(new RoundedBorder(25));
-        loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.setBackground(new Color(0, 153, 255));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setFocusPainted(false);
-        loginButton.setContentAreaFilled(true);
-        loginButton.setOpaque(true); 
+        loginButton = new BotonAzul("Iniciar sesión", new Dimension(180, 35));
         loginButton.addActionListener(this::onLogin);
         formPanel.add(loginButton);
 
@@ -86,6 +82,10 @@ public class LoginAdmin extends JFrame {
         registerButton.setContentAreaFilled(false);
         registerButton.addActionListener(this::onRegister);
         formPanel.add(registerButton);
+
+        volverMainButton = new BotonAzul("Volver al Menú Principal", new Dimension(200, 35));
+        volverMainButton.addActionListener(e -> volverAlMain());
+        formPanel.add(volverMainButton);
 
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
@@ -138,6 +138,11 @@ public class LoginAdmin extends JFrame {
 
         noCuentaLabel.setBounds(centerXLabel, y, 150, 25);
         registerButton.setBounds(centerXField + 30, y, 160, 25);
+        
+        int bottomY = formHeight - 50; // 50 píxeles desde el borde inferior
+        int leftX = 20; // 20 píxeles desde el borde izquierdo
+        
+        volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
 
     private void onLogin(ActionEvent evt) {
@@ -190,6 +195,11 @@ public class LoginAdmin extends JFrame {
     private void onRegister(ActionEvent evt) {
         new RegistroAdmin();
         dispose();    
+    }
+
+    private void volverAlMain() {
+        new Sistema();
+        dispose();
     }
 
     public static void main(String[] args) {
