@@ -1,4 +1,4 @@
-package User;
+package Admin;
 import javax.swing.*;
 
 import Components.RoundedBorder;
@@ -6,14 +6,9 @@ import Components.RoundedPanel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
-public class Registro extends JFrame {
+public class RegistroAdmin extends JFrame {
 
     private JTextField credencialField;
     private JPasswordField passwordField;
@@ -23,8 +18,8 @@ public class Registro extends JFrame {
     private JLabel titleLabel, credencialLabel, passwordLabel, confirmarLabel, volverLoginLabel;
     private RoundedPanel formPanel;
 
-    public Registro() {
-        setTitle("Registro de cuenta");
+    public RegistroAdmin() {
+        setTitle("Registro de cuenta - Admin");
         setSize(850, 560);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -38,8 +33,9 @@ public class Registro extends JFrame {
         formPanel.setLayout(null);
         getContentPane().add(formPanel);
 
-        titleLabel = new JLabel("Registro");
+        titleLabel = new JLabel("Registro Admin");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         formPanel.add(titleLabel);
 
         credencialLabel = new JLabel("Credencial:");
@@ -137,7 +133,7 @@ public class Registro extends JFrame {
         int centerXLabel = (formWidth / 2) - fieldWidth / 2 - labelWidth;
         int centerXField = (formWidth / 2) - fieldWidth / 2;
 
-        titleLabel.setBounds((formWidth - 100) / 2, startY, 100, 30);
+        titleLabel.setBounds((formWidth - 200) / 2, startY, 200, 30);
         int y = startY + 30 + spacing;
 
         credencialLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
@@ -148,14 +144,14 @@ public class Registro extends JFrame {
         passwordField.setBounds(centerXField, y, fieldWidth, fieldHeight);
         y += fieldHeight + spacing;
 
-        confirmarLabel.setBounds(centerXLabel-70, y, labelWidth + 100, fieldHeight);
+        confirmarLabel.setBounds(centerXLabel - 70, y, labelWidth + 100, fieldHeight);
         confirmarPasswordField.setBounds(centerXField, y, fieldWidth, fieldHeight);
         y += fieldHeight + spacing;
 
         registerButton.setBounds(centerXField, y, fieldWidth, 35);
         y += 35 + spacing;
 
-        volverLoginLabel.setBounds(centerXLabel + 50, y, 140, 25); // o ajusta el ancho según convenga
+        volverLoginLabel.setBounds(centerXLabel + 50, y, 140, 25);
         volverLoginButton.setBounds(centerXField + 30, y, 160, 25);
     }
 
@@ -169,114 +165,41 @@ public class Registro extends JFrame {
             return;
         }
 
-        if (!esNumeroValido(cedula)) {
-            JOptionPane.showMessageDialog(this, "Cédula inválida. Debe estar entre 500.000 y 32.000.000", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!credencialExiste(cedula)) {
-            JOptionPane.showMessageDialog(this, "La cédula no está autorizada para registrarse", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (usuarioYaRegistrado(cedula)) {
-            JOptionPane.showMessageDialog(this, "La cédula ya está registrada en el sistema.",
-                "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         if (!pass.equals(confirm)) {
             JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Registro exitoso: guardar en sesión
-        Usuario nuevoUsuario = new Usuario(cedula);
-        Sesion.iniciarSesion(nuevoUsuario);
+        Administrador nuevoAdmin = new Administrador(cedula);
+        SesionAdmin.iniciarSesion(nuevoAdmin);
 
-        JOptionPane.showMessageDialog(this, "¡Registro exitoso!\nBienvenido: " + cedula);
+        JOptionPane.showMessageDialog(this, "¡Registro exitoso!\nBienvenido Admin: " + cedula);
 
-        guardarUsuario(cedula, pass);
-
-        // Aquí podrías ir a la ventana principal
-        // new VentanaPrincipal().setVisible(true);
-        // dispose();
+        guardarAdmin(cedula, pass);
     }
 
-    private boolean esNumeroValido(String cedulaStr) {
-        try {
-            int cedula = Integer.parseInt(cedulaStr);
-            return cedula >= 500_000 && cedula <= 32_000_000;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
+    private void guardarAdmin(String cedula, String contrasena) {
+        File archivo = new File("admin/Model/admins.txt");
 
-    private boolean credencialExiste(String cedula) {
-        File archivo = new File("User/Model/credenciales.txt"); // ajusta si está en otra ruta
-        if (!archivo.exists()) {
-            JOptionPane.showMessageDialog(this, "Archivo de credenciales no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                if (linea.trim().equals(cedula)) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al leer credenciales: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return false;
-    }
-
-    private boolean usuarioYaRegistrado(String cedula) {
-        File archivo = new File("User/Model/usuarios.txt");
-
-        if (!archivo.exists()) {
-            return false; // Si no existe el archivo, no hay usuarios registrados aún
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                String[] partes = linea.split(",");
-                if (partes.length >= 1 && partes[0].trim().equals(cedula)) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error leyendo usuarios: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return false;
-    }
-
-    private void guardarUsuario(String cedula, String contrasena) {
-        File archivo = new File("User/Model/usuarios.txt");
-
-        try (FileWriter writer = new FileWriter(archivo, true); // true = modo append
-            BufferedWriter bw = new BufferedWriter(writer)) {
+        try (FileWriter writer = new FileWriter(archivo, true);
+             BufferedWriter bw = new BufferedWriter(writer)) {
 
             bw.write(cedula + "," + contrasena);
             bw.newLine();
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al guardar el usuario: " + e.getMessage(),
+            JOptionPane.showMessageDialog(this, "Error al guardar el admin: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void onVolverLogin(ActionEvent evt) {
-        new Login();  // Abrimos la ventana de login
-        dispose();    // Cerramos la actual
+        new LoginAdmin();
+        dispose();
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Registro::new);
+        SwingUtilities.invokeLater(RegistroAdmin::new);
     }
 }

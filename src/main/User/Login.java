@@ -1,8 +1,8 @@
 package User;
 import javax.swing.*;
 
-import User.Components.RoundedBorder;
-import User.Components.RoundedPanel;
+import Components.RoundedBorder;
+import Components.RoundedPanel;
 
 import java.awt.*;
 import java.awt.event.*;

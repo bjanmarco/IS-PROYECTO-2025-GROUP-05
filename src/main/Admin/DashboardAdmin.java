@@ -1,5 +1,7 @@
 package Admin;
 
+import Components.RoundedBorder;
+import Components.RoundedPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
