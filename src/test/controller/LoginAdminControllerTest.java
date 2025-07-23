@@ -73,10 +73,9 @@ public class LoginAdminControllerTest {
         public boolean usuarioRegistradoResult = false;
         public boolean claveValidaResult = false;
         public boolean credencialesValidasResult = false;
-        public double saldoResult = 0.0;
         
         @Override
-        public boolean usuarioYaRegistrado(String credencial) {
+        public boolean credencialExiste(String credencial) {
             return usuarioRegistradoResult;
         }
         
@@ -88,11 +87,6 @@ public class LoginAdminControllerTest {
         @Override
         public boolean verificarCredenciales(String credencial, String contrasena) {
             return credencialesValidasResult;
-        }
-        
-        @Override
-        public double obtenerSaldo(String credencial) {
-            return saldoResult;
         }
     }
 
@@ -156,7 +150,6 @@ public class LoginAdminControllerTest {
         modelStub.usuarioRegistradoResult = true;
         modelStub.claveValidaResult = true;
         modelStub.credencialesValidasResult = true;
-        modelStub.saldoResult = 1000.0;
 
         viewStub.simularLogin();
 

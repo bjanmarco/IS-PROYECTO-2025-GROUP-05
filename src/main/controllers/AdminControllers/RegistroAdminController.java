@@ -40,7 +40,7 @@ public class RegistroAdminController {
             return;
         }
 
-        if (model.existeCredencial(credencial)) {
+        if (model.credencialExiste(credencial)) {
             view.mostrarError("La credencial ya está registrada.");
             return;
         }

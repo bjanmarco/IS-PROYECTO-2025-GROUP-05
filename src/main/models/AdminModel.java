@@ -2,7 +2,7 @@ package models;
 
 import java.io.*;
 
-public class AdminModel extends UserModel {
+public class AdminModel extends BaseUserModel {
 
     public static final String ADMIN_PASSWORD = "admin123";
     public final File adminFile;
@@ -24,9 +24,10 @@ public class AdminModel extends UserModel {
         return super.autenticar(credencial, password, adminFile);
     }
 
-    public boolean existeCredencial(String credencial) {
+    public boolean credencialExiste(String credencial) {
         return super.credencialExiste(credencial, adminFile);
     }
+
 
     public boolean guardarAdmin(String credencial, String password) {
         return super.guardarCredencial(credencial, password, adminFile);

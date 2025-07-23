@@ -8,11 +8,11 @@ import views.Admin.LoginAdminView;
 
 public class LoginAdminController {
     private final LoginAdminView view;
-    private final AdminModel model;
+    private final AdminModel adminModel;
 
     public LoginAdminController() {
         this.view = new LoginAdminView();
-        this.model = new AdminModel();
+        this.adminModel = new AdminModel();
         setupListeners();
     }
 
@@ -31,23 +31,22 @@ public class LoginAdminController {
             return;
         }
 
-        if (!model.usuarioYaRegistrado(credencial)) {
+        if (!adminModel.credencialExiste(credencial)) {
             view.mostrarError("El usuario no está registrado.");
             return;
         }
         
-        if (!model.esClaveValida(contrasena)) {
+        if (!adminModel.esClaveValida(contrasena)) {
             view.mostrarError("Contraseña debe ser de al menos 6 caracteres.");
             return;
         }
 
-        if (!model.verificarCredenciales(credencial, contrasena)) {
+        if (!adminModel.verificarCredenciales(credencial, contrasena)) {
             view.mostrarError("Contraseña incorrecta.");
             return;
         }
 
-        double saldo = model.obtenerSaldo(credencial); 
-        Sesion.iniciarSesion(new Usuario(credencial, saldo));
+        Sesion.iniciarSesion(new Usuario(credencial));
 
         view.mostrarMensaje("Inicio de sesión exitoso.");
         view.dispose();
