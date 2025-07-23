@@ -81,7 +81,7 @@ public class RegistroAdminControllerTest {
         }
         
         @Override
-        public boolean existeCredencial(String credencial) {
+        public boolean credencialExiste(String credencial) {
             return existeCredencialResult;
         }
         

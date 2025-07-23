@@ -22,7 +22,8 @@ public abstract class BaseUserModel {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoCredenciales))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
-                if (linea.trim().equals(credencial)) {
+                String[] partes = linea.split(",");
+                if (partes.length > 0 && partes[0].trim().equals(credencial)) {
                     return true;
                 }
             }
