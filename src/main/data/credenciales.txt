@@ -1,7 +1,8 @@
-30212327
-567890
-31726718
-23094212
-13122332
-900000
-30212326
+31187193,miguel patiño,trabajador,foton.png
+30212327,maria peres,estudiante,fotico.png
+567890,ronaldo antonio,trabajador,foton.png
+31726718,feliz rivas,trabajador,img_123456.png
+23094212,claudia isabela,estudiante,foticho.png
+13122332,jose antonio,estudiante,foto123456.jpg
+900000,sofia vergara,trabajador,pic189.jpg
+30212326,angel romero,estudiante,picture987.png

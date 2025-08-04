@@ -14,12 +14,11 @@ public class DashboardAdminView extends JFrame {
     private RoundedPanel formPanel;
     private JLabel dateLabel;
     private JLabel profileIcon;
-    private JLabel credencialLabel;
+    private JLabel cedulaLabel;
     private JLabel rolLabel; 
 
-    private BotonAzul consultarInsumosBtn;
     private BotonAzul gestionarMenuBtn;
-    private BotonAzul generarReporteBtn;
+    private BotonAzul verificarDesayunoBtn;
     private BotonAzul cargaCostosFijosBtn;
     private BotonAzul cerrarSesionBtn;
 
@@ -63,11 +62,11 @@ public class DashboardAdminView extends JFrame {
         };
         formPanel.add(profileIcon);
 
-        credencialLabel = new JLabel();
-        credencialLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        credencialLabel.setForeground(Color.BLACK);
-        credencialLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        formPanel.add(credencialLabel);
+        cedulaLabel = new JLabel();
+        cedulaLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        cedulaLabel.setForeground(Color.BLACK);
+        cedulaLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        formPanel.add(cedulaLabel);
 
         rolLabel = new JLabel("Administrador");
         rolLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -75,14 +74,12 @@ public class DashboardAdminView extends JFrame {
         rolLabel.setHorizontalAlignment(SwingConstants.CENTER);
         formPanel.add(rolLabel);
 
-        consultarInsumosBtn = new BotonAzul("Consultar Insumos");
         gestionarMenuBtn = new BotonAzul("Gestionar Menú");
-        generarReporteBtn = new BotonAzul("Generar Reporte");
+        verificarDesayunoBtn = new BotonAzul("Control de Acceso");
         cargaCostosFijosBtn = new BotonAzul("Carga de Costos Fijos");
 
-        formPanel.add(consultarInsumosBtn);
         formPanel.add(gestionarMenuBtn);
-        formPanel.add(generarReporteBtn);
+        formPanel.add(verificarDesayunoBtn);
         formPanel.add(cargaCostosFijosBtn);
 
         cerrarSesionBtn = new BotonAzul("Cerrar Sesión");
@@ -107,8 +104,8 @@ public class DashboardAdminView extends JFrame {
         dateLabel.setText(now.format(formatter));
     }
 
-    public void setCredencial(String credencial) {
-        this.credencialLabel.setText("Credencial: " + credencial);
+    public void setCedula(String cedula) {
+        this.cedulaLabel.setText("Cedula: " + cedula);
     }
 
     public void mostrarError(String mensaje) {
@@ -137,34 +134,33 @@ public class DashboardAdminView extends JFrame {
         profileIcon.setBounds(profileX, profileY, 100, 100);
 
         int infoY = profileY + 110;
-        credencialLabel.setBounds(profileX - 50, infoY, 200, 25);
+        cedulaLabel.setBounds(profileX - 50, infoY, 200, 25);
+        
         rolLabel.setBounds(profileX - 25, infoY + 25, 150, 20);
 
-
-        int buttonWidth = 200;
+        int buttonWidth = 220;
         int buttonHeight = 40;
         int buttonSpacing = 20;
         int buttonsStartX = formWidth / 2 + 50;
         int buttonsStartY = profileY - 20;
 
-        consultarInsumosBtn.setBounds(buttonsStartX, buttonsStartY, buttonWidth, buttonHeight);
-        gestionarMenuBtn.setBounds(buttonsStartX, buttonsStartY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight);
-        generarReporteBtn.setBounds(buttonsStartX, buttonsStartY + 2 * (buttonHeight + buttonSpacing), buttonWidth, buttonHeight);
-        cargaCostosFijosBtn.setBounds(buttonsStartX, buttonsStartY + 3 * (buttonHeight + buttonSpacing), buttonWidth, buttonHeight);
+
+        gestionarMenuBtn.setBounds(buttonsStartX, buttonsStartY, buttonWidth, buttonHeight);
+        
+        
+        
+        verificarDesayunoBtn.setBounds(buttonsStartX, buttonsStartY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight);
+        cargaCostosFijosBtn.setBounds(buttonsStartX, buttonsStartY + 2 * (buttonHeight + buttonSpacing), buttonWidth, buttonHeight);
 
         cerrarSesionBtn.setBounds(20, formHeight - 50, 150, 35);
-    }
-
-    public JButton getConsultarInsumosBtn() {
-        return consultarInsumosBtn;
     }
 
     public JButton getGestionarMenuBtn() {
         return gestionarMenuBtn;
     }
 
-    public JButton getGenerarReporteBtn() {
-        return generarReporteBtn;
+    public JButton getVerificarDesayunoBtn() {
+        return verificarDesayunoBtn;
     }
 
     public JButton getCargaCostosFijosBtn() {

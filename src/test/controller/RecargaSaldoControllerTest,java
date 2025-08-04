@@ -1,0 +1,155 @@
+package test.controller;
+
+import controllers.UserControllers.RecargaSaldoController;
+import models.RefBancariaModel;
+import models.RefBancariaModel.RefBancaria;
+import models.UserModel;
+import models.Sesion;
+import models.Usuario;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.swing.*;
+
+import static org.mockito.Mockito.*;
+
+public class RecargaSaldoControllerTest {
+
+    private RecargaSaldoController controller;
+    private RefBancariaModel refModelMock;
+    private UserModel userModelMock;
+    private RecargaSaldoViewMock viewMock;
+    private Usuario usuarioMock;
+
+    private class RecargaSaldoViewMock extends views.Usuario.RecargaSaldoView {
+        private String ref;
+        private String mensajeMostrado;
+        private String tipoMensaje;
+        private boolean visible = false;
+
+        public RecargaSaldoViewMock(JFrame parent) { super(parent); }
+
+        public void setReferencia(String ref) { this.ref = ref; }
+
+        @Override public String getReferencia() { return ref; }
+
+        @Override public void mostrarError(String msg) {
+            mensajeMostrado = msg;
+            tipoMensaje = "error";
+        }
+
+        @Override public void mostrarExito(String msg) {
+            mensajeMostrado = msg;
+            tipoMensaje = "exito";
+        }
+
+        @Override public void limpiarCampos() {}
+        @Override public void dispose() {}
+        @Override public void setVisible(boolean v) { visible = v; }
+
+        public String getMensajeMostrado() { return mensajeMostrado; }
+        public String getTipoMensaje() { return tipoMensaje; }
+    }
+
+    @Before
+    public void setUp() {
+        refModelMock = mock(RefBancariaModel.class);
+        userModelMock = mock(UserModel.class);
+        viewMock = new RecargaSaldoViewMock(null);
+
+        controller = new RecargaSaldoController(null) {
+            {
+                
+                this.refModel = refModelMock;
+                this.userModel = userModelMock;
+                this.view = viewMock;
+            }
+
+            @Override protected void setupListeners() {} 
+        };
+
+        usuarioMock = new Usuario("1234", "Juan", "Perez", "juanp", "clave", "user", 10.00, true, true);
+        Sesion.setUsuarioActual(usuarioMock);
+    }
+
+    @Test
+    public void testReferenciaVacia() {
+        viewMock.setReferencia("");
+
+        controller.confirmarRecarga();
+
+        assert "Debe ingresar la referencia bancaria.".equals(viewMock.getMensajeMostrado());
+        assert "error".equals(viewMock.getTipoMensaje());
+    }
+
+    @Test
+    public void testReferenciaInvalida() {
+        viewMock.setReferencia("12");
+
+        when(refModelMock.esReferenciaValida("12")).thenReturn(false);
+
+        controller.confirmarRecarga();
+
+        assert viewMock.getMensajeMostrado().contains("inválido");
+    }
+
+    @Test
+    public void testReferenciaNoEncontrada() {
+        viewMock.setReferencia("12345678");
+
+        when(refModelMock.esReferenciaValida("12345678")).thenReturn(true);
+        when(refModelMock.buscarReferencia("12345678")).thenReturn(null);
+
+        controller.confirmarRecarga();
+
+        assert viewMock.getMensajeMostrado().contains("no encontrada");
+    }
+
+    @Test
+    public void testMontoInvalido() {
+        viewMock.setReferencia("12345678");
+
+        RefBancaria ref = new RefBancaria("12345678", "BNC", 0.0);
+
+        when(refModelMock.esReferenciaValida("12345678")).thenReturn(true);
+        when(refModelMock.buscarReferencia("12345678")).thenReturn(ref);
+
+        controller.confirmarRecarga();
+
+        assert viewMock.getMensajeMostrado().contains("monto debe ser mayor");
+    }
+
+    @Test
+    public void testRecargaExitosa() {
+        viewMock.setReferencia("87654321");
+
+        RefBancaria ref = new RefBancaria("87654321", "Mercantil", 5.0);
+
+        when(refModelMock.esReferenciaValida("87654321")).thenReturn(true);
+        when(refModelMock.buscarReferencia("87654321")).thenReturn(ref);
+        when(userModelMock.actualizarSaldo("juanp", 15.0)).thenReturn(true);
+        when(refModelMock.eliminarReferencia("87654321")).thenReturn(true);
+
+        JOptionPaneMocker.mockYes(); 
+
+        controller.confirmarRecarga();
+
+        assert viewMock.getTipoMensaje().equals("exito");
+        assert viewMock.getMensajeMostrado().contains("Recarga exitosa");
+        assert usuarioMock.getSaldo() == 15.0;
+    }
+
+    static class JOptionPaneMocker {
+        static void mockYes() {
+            mockStatic(JOptionPane.class);
+            when(JOptionPane.showConfirmDialog(any(), any(), any(), anyInt(), anyInt())).thenReturn(JOptionPane.YES_OPTION);
+        }
+
+        static void mockStatic(Class<?> cls) {
+            try {
+                java.lang.reflect.Field field = JOptionPane.class.getDeclaredField("defaultLookAndFeelDecorated");
+                field.setAccessible(true); 
+            } catch (Exception ignored) {}
+        }
+    }
+}

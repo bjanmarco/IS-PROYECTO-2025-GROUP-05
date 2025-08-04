@@ -25,7 +25,7 @@ public class DashboardAdminController {
         Usuario admin = Sesion.getUsuarioActual();
 
         if (admin != null) {
-            view.setCredencial(admin.getCredencial());
+            view.setCedula(admin.getCedula());
             view.updateDate(java.time.LocalDateTime.now()); 
         } else {
             view.mostrarError("No hay una sesión activa.");
@@ -34,20 +34,18 @@ public class DashboardAdminController {
     }
 
     private void agregarListeners() {
-        view.getConsultarInsumosBtn().addActionListener(_ -> consultarInsumos());
         view.getGestionarMenuBtn().addActionListener(_ -> gestionarMenu());
-        view.getGenerarReporteBtn().addActionListener(_ -> generarReporte());
+        view.getVerificarDesayunoBtn().addActionListener(_ -> verificarDesayuno());
         view.getCargaCostosFijosBtn().addActionListener(_ -> cargaCostosFijos());
         view.getCerrarSesionBtn().addActionListener(_ -> cerrarSesion());
     }
 
-    private void consultarInsumos() {
+    private void verificarDesayuno() {
+        new controllers.UserControllers.VerificacionIdentidadController(view);
     }
 
     private void gestionarMenu() {
-    }
-
-    private void generarReporte() {
+        new GestionarMenuController(view);
     }
 
     public void cargaCostosFijos() {

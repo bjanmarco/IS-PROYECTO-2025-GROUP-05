@@ -3,13 +3,16 @@ package test.controller;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
+import org.junit.After;
 import controllers.AdminControllers.LoginAdminController;
 import models.AdminModel;
 import models.Sesion;
+import models.Usuario;
 import views.Admin.LoginAdminView;
+import java.awt.event.ActionEvent;
+import java.lang.reflect.Field;
+
+
 
 public class LoginAdminControllerTest {
 
@@ -17,66 +20,24 @@ public class LoginAdminControllerTest {
         public String errorMessage;
         public String successMessage;
         public boolean disposed = false;
-        public String credencial = "";
-        public String password = "";
+        public String cedula = "admin";
+        public String password = "password123";
         
-        private ActionListener loginListener;
-        private ActionListener volverMainListener;
-        private ActionListener volverRegistroListener;
-        
-        public TestLoginAdminView() {
-
-        }
-        
-        @Override public String getCredencial() { return credencial; }
+        @Override public String getCedula() { return cedula; }
         @Override public String getPassword() { return password; }
         @Override public void mostrarError(String mensaje) { this.errorMessage = mensaje; }
         @Override public void mostrarMensaje(String mensaje) { this.successMessage = mensaje; }
         @Override public void dispose() { this.disposed = true; }
-        @Override public void setVisible(boolean visible) { /* No hacer nada */ }
-        
-        @Override
-        public void setLoginListener(ActionListener listener) {
-            this.loginListener = listener;
-        }
-        
-        @Override
-        public void setVolverMainListener(ActionListener listener) {
-            this.volverMainListener = listener;
-        }
-        
-        @Override
-        public void setVolverRegistroListener(ActionListener listener) {
-            this.volverRegistroListener = listener;
-        }
-        
-        public void simularLogin() {
-            if (loginListener != null) {
-                loginListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "login"));
-            }
-        }
-        
-        public void simularVolverMain() {
-            if (volverMainListener != null) {
-                volverMainListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "volverMain"));
-            }
-        }
-        
-        public void simularIrARegistro() {
-            if (volverRegistroListener != null) {
-                volverRegistroListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "volverRegistro"));
-            }
-        }
     }
 
     private static class TestAdminModel extends AdminModel {
-        public boolean usuarioRegistradoResult = false;
-        public boolean claveValidaResult = false;
-        public boolean credencialesValidasResult = false;
+        public boolean cedulaExisteResult = true;
+        public boolean claveValidaResult = true;
+        public boolean verificarCedulaesResult = true;
         
         @Override
-        public boolean credencialExiste(String credencial) {
-            return usuarioRegistradoResult;
+        public boolean cedulaExiste(String cedula) {
+            return cedulaExisteResult;
         }
         
         @Override
@@ -85,8 +46,8 @@ public class LoginAdminControllerTest {
         }
         
         @Override
-        public boolean verificarCredenciales(String credencial, String contrasena) {
-            return credencialesValidasResult;
+        public boolean verificarCedulaes(String cedula, String contrasena) {
+            return verificarCedulaesResult;
         }
     }
 
@@ -95,84 +56,98 @@ public class LoginAdminControllerTest {
     private TestAdminModel modelStub;
 
     @Before
-    public void setUp() throws Exception {
-        // Limpiar la sesión
-        Sesion.cerrarSesion();
-        
+    public void setUp() {
         viewStub = new TestLoginAdminView();
         modelStub = new TestAdminModel();
         
-        // Crear controlador real
-        controller = new LoginAdminController();
         
-        // Inyectar stubs después de la creación
-        Field viewField = LoginAdminController.class.getDeclaredField("view");
-        viewField.setAccessible(true);
-        viewField.set(controller, viewStub);
+        try {
+            controller = new LoginAdminController();
+            
+            
+            Field viewField = LoginAdminController.class.getDeclaredField("view");
+            viewField.setAccessible(true);
+            viewField.set(controller, viewStub);
+            
+            
+            Field modelField = LoginAdminController.class.getDeclaredField("adminModel");
+            modelField.setAccessible(true);
+            modelField.set(controller, modelStub);
+            
+        } catch (Exception e) {
+            fail("Error configurando la prueba: " + e.getMessage());
+        }
         
-        Field modelField = LoginAdminController.class.getDeclaredField("model");
-        modelField.setAccessible(true);
-        modelField.set(controller, modelStub);
-        
-        controller.getClass().getDeclaredMethod("setupListeners").invoke(controller);
+        Sesion.cerrarSesion();
     }
 
     @Test
     public void testCamposVacios() {
-        // Configuración
-        viewStub.credencial = "";
+        viewStub.cedula = "";
         viewStub.password = "";
         
-        // Ejecución
-        viewStub.simularLogin();
+        controller.intentarLogin();
         
-        // Verificación
         assertEquals("Todos los campos son obligatorios", viewStub.errorMessage);
+        assertNull(Sesion.getUsuarioActual());
     }
 
     @Test
     public void testUsuarioNoRegistrado() {
-        // Configuración
-        viewStub.credencial = "usuario";
-        viewStub.password = "password";
-        modelStub.usuarioRegistradoResult = false;
-
-        viewStub.simularLogin();
-
+        modelStub.cedulaExisteResult = false;
+        
+        controller.intentarLogin();
+        
         assertEquals("El usuario no está registrado.", viewStub.errorMessage);
+        assertNull(Sesion.getUsuarioActual());
+    }
+
+    @Test
+    public void testClaveInvalida() {
+        modelStub.claveValidaResult = false;
+        
+        controller.intentarLogin();
+        
+        assertEquals("Contraseña debe ser de al menos 6 caracteres.", viewStub.errorMessage);
+        assertNull(Sesion.getUsuarioActual());
+    }
+
+    @Test
+    public void testCedulaesInvalidas() {
+        modelStub.verificarCedulaesResult = false;
+        
+        controller.intentarLogin();
+        
+        assertEquals("Contraseña incorrecta.", viewStub.errorMessage);
+        assertNull(Sesion.getUsuarioActual());
     }
 
     @Test
     public void testLoginExitoso() {
-
-        viewStub.credencial = "admin";
-        viewStub.password = "password123";
-        modelStub.usuarioRegistradoResult = true;
-        modelStub.claveValidaResult = true;
-        modelStub.credencialesValidasResult = true;
-
-        viewStub.simularLogin();
-
+        controller.intentarLogin();
+        
         assertEquals("Inicio de sesión exitoso.", viewStub.successMessage);
         assertTrue(viewStub.disposed);
-        assertNotNull(Sesion.getUsuarioActual());
-        assertEquals("admin", Sesion.getUsuarioActual().getCredencial());
-        assertEquals(1000.0, Sesion.getUsuarioActual().getSaldo(), 0.001);
+        
+        Usuario usuario = Sesion.getUsuarioActual();
+        assertNotNull(usuario);
+        assertEquals("admin", usuario.getCedula());
     }
 
     @Test
     public void testVolverAlMenu() {
-
-        viewStub.simularVolverMain();
-
+        controller.volverAlMenu();
         assertTrue(viewStub.disposed);
     }
 
     @Test
     public void testIrARegistro() {
-
-        viewStub.simularIrARegistro();
-
+        controller.irARegistro();
         assertTrue(viewStub.disposed);
+    }
+
+    @After
+    public void tearDown() {
+        Sesion.cerrarSesion();
     }
 }

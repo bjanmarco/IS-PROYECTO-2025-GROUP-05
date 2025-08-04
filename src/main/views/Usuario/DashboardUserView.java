@@ -9,11 +9,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class DashboardUserView extends JFrame {
     private RoundedPanel formPanel;
-    private JLabel dateLabel, profileIcon, credencialInfoLabel, saldoLabel;
-    private BotonAzul consultarMenuBtn, cerrarSesionBtn;
+    private JLabel dateLabel, profileIcon, cedulaInfoLabel, saldoLabel, bienvenidaLabel, rolLabel;
+    private BotonAzul consultarMenuBtn, recargarSaldoBtn, cerrarSesionBtn;
 
     public DashboardUserView(Usuario usuario) {
         setTitle("Panel del Estudiante");
@@ -27,6 +28,10 @@ public class DashboardUserView extends JFrame {
         formPanel.setBackground(Color.WHITE);
         formPanel.setLayout(null);
         getContentPane().add(formPanel);
+        
+        bienvenidaLabel = new JLabel("\u00a1Hola " + usuario.getNombreApellido() + "!", SwingConstants.CENTER);
+        bienvenidaLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        formPanel.add(bienvenidaLabel);
 
         dateLabel = new JLabel(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         dateLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -51,14 +56,22 @@ public class DashboardUserView extends JFrame {
         consultarMenuBtn = UIFactory.crearBotonAzul("Consultar Menú", new Dimension(200, 40));
         formPanel.add(consultarMenuBtn);
 
+        recargarSaldoBtn = UIFactory.crearBotonAzul("Recargar Saldo", new Dimension(200, 40));
+        formPanel.add(recargarSaldoBtn);
+
         cerrarSesionBtn = UIFactory.crearBotonAzul("Cerrar Sesión", new Dimension(150, 35));
         formPanel.add(cerrarSesionBtn);
 
-        credencialInfoLabel = new JLabel("Credencial: " + usuario.getCredencial());
-        credencialInfoLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        formPanel.add(credencialInfoLabel);
+        cedulaInfoLabel = new JLabel("Cedula: " + usuario.getCedula());
+        cedulaInfoLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        formPanel.add(cedulaInfoLabel);
 
-        saldoLabel = new JLabel(String.format("Saldo: %.2f$", usuario.getSaldo()));
+        rolLabel = new JLabel("Rol: " + usuario.getRol());
+        rolLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        formPanel.add(rolLabel);
+
+        saldoLabel = new JLabel(String.format(Locale.US, "Saldo: %.2f Bs", usuario.getSaldo()));
+
         saldoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         saldoLabel.setForeground(new Color(0, 153, 255));
         formPanel.add(saldoLabel);
@@ -82,21 +95,24 @@ public class DashboardUserView extends JFrame {
         int formWidth = formPanel.getWidth();
         int formHeight = formPanel.getHeight();
 
-        saldoLabel.setBounds(formWidth - 120, 20, 200, 20);
-
+        bienvenidaLabel.setBounds(0, 60, formWidth, 30);
         dateLabel.setBounds(20, 20, 150, 20);
+        saldoLabel.setBounds(formWidth - 140, 20, 200, 20);
 
         int profileX = (formWidth / 2 - 100) / 2;
         int profileY = (formHeight - 100) / 2 - 30;
         profileIcon.setBounds(profileX, profileY, 100, 100);
-        credencialInfoLabel.setBounds(profileX - 30, profileY + 125, 200, 20);
+        cedulaInfoLabel.setBounds(profileX, profileY + 125, 200, 20);
+        rolLabel.setBounds(profileX, profileY + 155, 150, 20);
 
+        consultarMenuBtn.setBounds(formWidth / 2 + 50, profileY + 20, 200, 40);
+        recargarSaldoBtn.setBounds(formWidth / 2 + 50, profileY + 80, 200, 40);
 
-        consultarMenuBtn.setBounds(formWidth / 2 + 50, profileY + 50, 200, 40);
         cerrarSesionBtn.setBounds(formWidth - 170, formHeight - 50, 150, 35);
     }
 
     public JButton getConsultarMenuBtn() { return consultarMenuBtn; }
+    public JButton getRecargarSaldoBtn() { return recargarSaldoBtn; }
     public JButton getCerrarSesionBtn() { return cerrarSesionBtn; }
 
     public void updateDate(LocalDateTime fecha) {
@@ -104,6 +120,6 @@ public class DashboardUserView extends JFrame {
     }
 
     public void actualizarSaldo(double saldo) {
-        saldoLabel.setText(String.format("Saldo: %.2f$", saldo));
+        saldoLabel.setText(String.format("Saldo: %.2f Bs", saldo));
     }
 }

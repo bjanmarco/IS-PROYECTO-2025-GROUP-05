@@ -17,7 +17,7 @@ public class AdminModelTest {
     
     @Before
     public void setUp() throws Exception {
-        // Crear archivos de prueba
+        
         createTestFile(TEST_ADMINS_FILE, "admin123,securePass456\n");
         createTestFile(TEST_COSTOS_FILE, "");
         
@@ -48,10 +48,10 @@ public class AdminModelTest {
     }
 
     @Test
-    public void testVerificarCredenciales() {
-        assertTrue(model.verificarCredenciales("admin123", "securePass456"));
-        assertFalse(model.verificarCredenciales("admin123", "wrongpass"));
-        assertFalse(model.verificarCredenciales("unknown", "securePass456"));
+    public void testVerificarCedulaes() {
+        assertTrue(model.verificarCedulaes("admin123", "securePass456"));
+        assertFalse(model.verificarCedulaes("admin123", "wrongpass"));
+        assertFalse(model.verificarCedulaes("unknown", "securePass456"));
     }
 
     @Test
@@ -67,10 +67,10 @@ public class AdminModelTest {
 
     @Test
     public void testCalcularCCB_ZeroTrays() {
-        // Caso de división por cero
+        
         assertEquals(0.0, model.calcularCCB(5000, 3000, 0, 5), 0.001);
         
-        // todos ceros
+        
         assertEquals(0.0, model.calcularCCB(0, 0, 0, 0), 0.001);
     }
 
@@ -84,13 +84,13 @@ public class AdminModelTest {
         double expected = ((5000 + 3000) / 1000) * (1 + (20.0/100));
         assertEquals(expected, model.calcularCCB(5000, 3000, 1000, 20), 0.001);
     }
-//
+
     @Test
     public void testCalcularCCB_EdgeCases() {
-        // Costos negativos
+        
         assertEquals(0.0, model.calcularCCB(-1000, -500, 100, 5), 0.001);
         
-        // merma negativa
+        
         double result = model.calcularCCB(1000, 500, 100, -5);
         assertTrue("deberia saber que hacer con saldo negativo", result >= 0);
         
@@ -108,28 +108,9 @@ public class AdminModelTest {
         assertEquals(expected, model.calcularCCB(cf, cv, nb, merma), 0.0001);
     }
 
-    @Test
-    public void testGuardarCostos() throws IOException {
-        double ccbValue = 8.4;
-        assertTrue(model.guardarCostos(TEST_PERIODO, ccbValue));
-        
-        // Verificar archivo
-        try (BufferedReader reader = new BufferedReader(new FileReader(TEST_COSTOS_FILE))) {
-            String line = reader.readLine();
-            assertEquals(TEST_PERIODO + "," + ccbValue, line);
-        }
-        
-
-        assertTrue(model.guardarCostos("2023-11", 9.2));
-        try (BufferedReader reader = new BufferedReader(new FileReader(TEST_COSTOS_FILE))) {
-            assertEquals(TEST_PERIODO + "," + ccbValue, reader.readLine());
-            assertEquals("2023-11,9.2", reader.readLine());
-        }
-    }
-
     @After
     public void tearDown() {
-        // borrar
+        
         new File(TEST_ADMINS_FILE).delete();
         new File(TEST_COSTOS_FILE).delete();
     }

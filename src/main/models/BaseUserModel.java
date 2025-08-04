@@ -16,24 +16,24 @@ public abstract class BaseUserModel {
         }
     }
 
-    public boolean credencialExiste(String credencial, File archivoCredenciales) {
-        if (!archivoCredenciales.exists()) return false;
+    public boolean cedulaExiste(String cedula, File archivoCedulaes) {
+        if (!archivoCedulaes.exists()) return false;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivoCredenciales))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivoCedulaes))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
-                if (partes.length > 0 && partes[0].trim().equals(credencial)) {
+                if (partes.length > 0 && partes[0].trim().equals(cedula)) {
                     return true;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error verificando credencial: " + e.getMessage());
+            System.err.println("Error verificando cedula: " + e.getMessage());
         }
         return false;
     }
 
-    public boolean autenticar(String credencial, String contrasena, File archivo) {
+    public boolean autenticar(String cedula, String contrasena, File archivo) {
         if (!archivo.exists()) return false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
@@ -41,7 +41,7 @@ public abstract class BaseUserModel {
             while ((linea = reader.readLine()) != null) {
                 String[] partes = linea.split(",");
                 if (partes.length >= 2 &&
-                    partes[0].trim().equals(credencial) &&
+                    partes[0].trim().equals(cedula) &&
                     partes[1].trim().equals(contrasena)) {
                     return true;
                 }
@@ -52,13 +52,13 @@ public abstract class BaseUserModel {
         return false;
     }
 
-    public boolean guardarCredencial(String credencial, String contrasena, File archivo) {
+    public boolean guardarCedula(String cedula, String contrasena, File archivo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
-            writer.write(credencial + "," + contrasena);
+            writer.write(cedula + "," + contrasena);
             writer.newLine();
             return true;
         } catch (IOException e) {
-            System.err.println("Error al guardar credencial: " + e.getMessage());
+            System.err.println("Error al guardar cedula: " + e.getMessage());
             return false;
         }
     }

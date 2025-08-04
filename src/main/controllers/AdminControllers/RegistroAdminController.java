@@ -21,11 +21,11 @@ public class RegistroAdminController {
     }
 
     public void registrarAdmin() {
-        String credencial = view.getCredencial();
+        String cedula = view.getCedula();
         String password = view.getContrasena();
         String confirmacion = view.getConfirmacion();
 
-        if (credencial.isEmpty() || password.isEmpty() || confirmacion.isEmpty()) {
+        if (cedula.isEmpty() || password.isEmpty() || confirmacion.isEmpty()) {
             view.mostrarError("Todos los campos son obligatorios.");
             return;
         }
@@ -40,12 +40,17 @@ public class RegistroAdminController {
             return;
         }
 
-        if (model.credencialExiste(credencial)) {
-            view.mostrarError("La credencial ya está registrada.");
+        if (model.cedulaExiste(cedula)) {
+            view.mostrarError("La cedula ya está registrada.");
             return;
         }
 
-        if (model.guardarAdmin(credencial, password)) {
+        if (!model.cedulaTrabajador(cedula)) {
+            view.mostrarError("La cédula no está autorizada para ser administrador o no esta en la BD de Secretaria.");
+            return;
+        }
+
+        if (model.guardarAdmin(cedula, password)) {
             view.mostrarMensaje("Administrador registrado con éxito.");
             view.dispose();
             new LoginAdminController();

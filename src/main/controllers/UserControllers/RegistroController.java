@@ -26,26 +26,27 @@ public class RegistroController {
     }
 
     public void onRegister() {
-        String credencial = view.getCredencial();
+        String cedula = view.getCedula();
         String pass = view.getContrasena();
         String confirm = view.getConfirmacion();
 
-        if (credencial.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+        if (cedula.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
             view.mostrarError("Todos los campos son obligatorios");
             return;
         }
 
-        if (!model.esCredencialValida(credencial)) {
+        if (!model.esCedulaValida(cedula)) {
             view.mostrarError("Cédula inválida.");
             return;
         }
 
-        if (!model.credencialExiste(credencial)) {
+        if (!model.cedulaExiste(cedula)) {
             view.mostrarError("La cédula no está autorizada.");
             return;
         }
+        
 
-        if (model.usuarioYaRegistrado(credencial)) {
+        if (model.usuarioYaRegistrado(cedula)) {
             view.mostrarError("La cédula ya está registrada.");
             return;
         }
@@ -60,9 +61,10 @@ public class RegistroController {
             return;
         }
 
-        if (model.guardarUsuario(credencial, pass, 0.0)) {
-            Sesion.iniciarSesion(new Usuario(credencial, 0.0));
-            view.mostrarMensaje("¡Registro exitoso! Bienvenido: " + credencial);
+        if (model.guardarUsuario(cedula, pass, 0.0)) {
+            Usuario usuario = model.obtenerUsuario(cedula);
+            Sesion.iniciarSesion(usuario);
+            view.mostrarMensaje("¡Registro exitoso! Bienvenido: " + cedula);
             new DashboardUserController();
             view.dispose();
         } else {

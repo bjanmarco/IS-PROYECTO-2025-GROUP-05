@@ -23,15 +23,15 @@ public class LoginAdminController {
     }
 
    public void intentarLogin() {
-        String credencial = view.getCredencial();
+        String cedula = view.getCedula();
         String contrasena = view.getPassword();
 
-        if (credencial.isEmpty() || contrasena.isEmpty()) {
+        if (cedula.isEmpty() || contrasena.isEmpty()) {
             view.mostrarError("Todos los campos son obligatorios");
             return;
         }
 
-        if (!adminModel.credencialExiste(credencial)) {
+        if (!adminModel.cedulaExiste(cedula)) {
             view.mostrarError("El usuario no está registrado.");
             return;
         }
@@ -41,12 +41,12 @@ public class LoginAdminController {
             return;
         }
 
-        if (!adminModel.verificarCredenciales(credencial, contrasena)) {
+        if (!adminModel.verificarCedulaes(cedula, contrasena)) {
             view.mostrarError("Contraseña incorrecta.");
             return;
         }
 
-        Sesion.iniciarSesion(new Usuario(credencial));
+        Sesion.iniciarSesion(new Usuario(cedula));
 
         view.mostrarMensaje("Inicio de sesión exitoso.");
         view.dispose();

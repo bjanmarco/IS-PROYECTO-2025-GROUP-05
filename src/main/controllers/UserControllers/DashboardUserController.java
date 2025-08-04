@@ -8,14 +8,15 @@ import javax.swing.*;
 import java.time.LocalDateTime;
 
 public class DashboardUserController {
-    private DashboardUserView view;
+    private DashboardUserView view;  
     private final Usuario usuario;
 
-    public DashboardUserController(){
+    public DashboardUserController() {
         this.usuario = Sesion.getUsuarioActual();
+        
         if (usuario == null) {
             JOptionPane.showMessageDialog(null, "No hay una sesión activa para el usuario.", "Error", JOptionPane.ERROR_MESSAGE);
-            new LoginController();
+            new LoginController(); 
             return;
         }
 
@@ -31,12 +32,17 @@ public class DashboardUserController {
 
     private void agregarListeners() {
         view.getConsultarMenuBtn().addActionListener(_ -> consultarMenu());
+        view.getRecargarSaldoBtn().addActionListener(_ -> recargarSaldo());
         view.getCerrarSesionBtn().addActionListener(_ -> cerrarSesion());
     }
 
     private void consultarMenu() {
         view.dispose();
         new MenuController();
+    }
+
+    private void recargarSaldo() {
+        new RecargaSaldoController(view);
     }
 
     private void cerrarSesion() {

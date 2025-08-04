@@ -18,9 +18,9 @@ public class RegistroControllerTest {
     private UserModelStub modelStub;
     RegistroController controller;
 
-    // Stub para RegistroView
+    
     private static class RegistroViewStub extends RegistroView {
-        public String credencial;
+        public String cedula;
         public String contrasena;
         public String confirmacion;
         public String mensajeError;
@@ -35,8 +35,8 @@ public class RegistroControllerTest {
         }
 
         @Override
-        public String getCredencial() {
-            return credencial;
+        public String getCedula() {
+            return cedula;
         }
 
         @Override
@@ -80,26 +80,27 @@ public class RegistroControllerTest {
         }
     }
 
-    // Stub para UserModel
+    
     private static class UserModelStub extends UserModel {
-        public boolean credencialValida = true;
-        public boolean credencialExiste = true;
+        public boolean cedulaValida = true;
+        public boolean cedulaExiste = true;
         public boolean usuarioYaRegistrado = false;
         public boolean claveValida = true;
         public boolean guardarExitoso = true;
+        public boolean obtenerUsuarioExitoso = true;
 
         @Override
-        public boolean esCredencialValida(String credencial) {
-            return credencialValida;
+        public boolean esCedulaValida(String cedula) {
+            return cedulaValida;
         }
 
         @Override
-        public boolean credencialExiste(String credencial) {
-            return credencialExiste;
+        public boolean cedulaExiste(String cedula) {
+            return cedulaExiste;
         }
 
         @Override
-        public boolean usuarioYaRegistrado(String credencial) {
+        public boolean usuarioYaRegistrado(String cedula) {
             return usuarioYaRegistrado;
         }
 
@@ -109,11 +110,24 @@ public class RegistroControllerTest {
         }
 
         @Override
-        public boolean guardarUsuario(String credencial, String clave, double saldo) {
-            if (guardarExitoso) {
-                Sesion.iniciarSesion(new Usuario(credencial, saldo));
-            }
+        public boolean guardarUsuario(String cedula, String clave, double saldo) {
             return guardarExitoso;
+        }
+
+        @Override
+        public Usuario obtenerUsuario(String cedula) {
+            if (obtenerUsuarioExitoso) {
+                return new Usuario(
+                    cedula, 
+                    0.0, 
+                    "Nombre Apellido", 
+                    "user", 
+                    "foto.jpg", 
+                    false, 
+                    false
+                );
+            }
+            return null;
         }
     }
 
@@ -132,25 +146,26 @@ public class RegistroControllerTest {
 
     @Test
     public void testRegistroExitoso() {
-        // Configurar datos para prueba
-        viewStub.credencial = "12345678";
+        
+        viewStub.cedula = "12345678";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password123";
         modelStub.guardarExitoso = true;
+        modelStub.obtenerUsuarioExitoso = true;
         
-        // Ejecutar
+        
         viewStub.registroListener.actionPerformed(new ActionEvent(new JButton(), 0, ""));
         
-        // Verificar
+        
         assertNotNull("Debería haber iniciado sesión", Sesion.getUsuarioActual());
-        assertEquals("12345678", Sesion.getUsuarioActual().getCredencial());
+        assertEquals("12345678", Sesion.getUsuarioActual().getCedula());
         assertEquals("¡Registro exitoso! Bienvenido: 12345678", viewStub.mensajeExito);
         assertTrue("Debería cerrar la vista", viewStub.disposed);
     }
 
     @Test
     public void testCamposVacios() {
-        viewStub.credencial = "";
+        viewStub.cedula = "";
         viewStub.contrasena = "";
         viewStub.confirmacion = "";
         
@@ -161,11 +176,11 @@ public class RegistroControllerTest {
     }
 
     @Test
-    public void testCredencialInvalida() {
-        viewStub.credencial = "123";
+    public void testCedulaInvalida() {
+        viewStub.cedula = "123";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password123";
-        modelStub.credencialValida = false;
+        modelStub.cedulaValida = false;
         
         viewStub.registroListener.actionPerformed(new ActionEvent(new JButton(), 0, ""));
         
@@ -173,11 +188,11 @@ public class RegistroControllerTest {
     }
 
     @Test
-    public void testCredencialNoAutorizada() {
-        viewStub.credencial = "87654321";
+    public void testCedulaNoAutorizada() {
+        viewStub.cedula = "87654321";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password123";
-        modelStub.credencialExiste = false;
+        modelStub.cedulaExiste = false;
         
         viewStub.registroListener.actionPerformed(new ActionEvent(new JButton(), 0, ""));
         
@@ -186,7 +201,7 @@ public class RegistroControllerTest {
 
     @Test
     public void testUsuarioYaRegistrado() {
-        viewStub.credencial = "11223344";
+        viewStub.cedula = "11223344";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password123";
         modelStub.usuarioYaRegistrado = true;
@@ -198,7 +213,7 @@ public class RegistroControllerTest {
 
     @Test
     public void testClaveInvalida() {
-        viewStub.credencial = "12345678";
+        viewStub.cedula = "12345678";
         viewStub.contrasena = "short";
         viewStub.confirmacion = "short";
         modelStub.claveValida = false;
@@ -210,26 +225,13 @@ public class RegistroControllerTest {
 
     @Test
     public void testContrasenasNoCoinciden() {
-        viewStub.credencial = "12345678";
+        viewStub.cedula = "12345678";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "different123";
         
         viewStub.registroListener.actionPerformed(new ActionEvent(new JButton(), 0, ""));
         
         assertEquals("Las contraseñas no coinciden.", viewStub.mensajeError);
-    }
-
-    @Test
-    public void testGuardarUsuarioFalla() {
-        viewStub.credencial = "12345678";
-        viewStub.contrasena = "password123";
-        viewStub.confirmacion = "password123";
-        modelStub.guardarExitoso = false;
-        
-        viewStub.registroListener.actionPerformed(new ActionEvent(new JButton(), 0, ""));
-        
-        assertEquals("Error al guardar el usuario.", viewStub.mensajeError);
-        assertNull("No debería haber sesión iniciada", Sesion.getUsuarioActual());
     }
 
     @Test

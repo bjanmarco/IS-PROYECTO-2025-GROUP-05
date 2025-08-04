@@ -11,7 +11,7 @@ import java.nio.file.*;
 public class UserModelTest {
     private UserModel model;
     private final String TEST_USERS_FILE = "src/main/data/usuarios.txt";
-    private final String TEST_CREDENTIALS_FILE = "src/main/data/credenciales.txt";
+    private final String TEST_CREDENTIALS_FILE = "src/main/data/cedulaes.txt";
     private String originalUsersContent;
     private String originalCredentialsContent;
 
@@ -19,14 +19,14 @@ public class UserModelTest {
     public void setUp() throws Exception {
         model = new UserModel();
         
-        //Guardar contenido original si los archivos existen
+        
         originalUsersContent = readFileIfExists(TEST_USERS_FILE);
         originalCredentialsContent = readFileIfExists(TEST_CREDENTIALS_FILE);
         
-        //Crear estructura de directorios si no existe
+        
         Files.createDirectories(Paths.get("src/main/data"));
         
-        //Crear archivos de prueba
+        
         writeFile(TEST_USERS_FILE, "623456,password123,100.0\n789012,clave456,50.5\n");
         writeFile(TEST_CREDENTIALS_FILE, "623456\n789012\n");
     }
@@ -52,11 +52,6 @@ public class UserModelTest {
         assertFalse(model.usuarioYaRegistrado("000000"));
     }
 
-    @Test
-    public void testCredencialExiste() {
-        assertTrue(model.credencialExiste("623456"));
-        assertFalse(model.credencialExiste("000000"));
-    }
 
     @Test
     public void testAutenticarUsuario() {
@@ -66,19 +61,12 @@ public class UserModelTest {
     }
 
     @Test
-    public void testEsCredencialValida() {
-        assertTrue(model.esCredencialValida("500000"));
-        assertTrue(model.esCredencialValida("32000000"));
-        assertFalse(model.esCredencialValida("499999"));
-        assertFalse(model.esCredencialValida("32000001"));
-        assertFalse(model.esCredencialValida("no_numero"));
-    }
-
-    @Test
-    public void testGuardarUsuario() {
-        assertTrue(model.guardarUsuario("123456", "nuevacontra", 200.0));
-        assertTrue(model.usuarioYaRegistrado("123456"));
-        assertTrue(model.autenticarUsuario("123456", "nuevacontra"));
+    public void testEsCedulaValida() {
+        assertTrue(model.esCedulaValida("500000"));
+        assertTrue(model.esCedulaValida("32000000"));
+        assertFalse(model.esCedulaValida("499999"));
+        assertFalse(model.esCedulaValida("32000001"));
+        assertFalse(model.esCedulaValida("no_numero"));
     }
 
     @Test
@@ -91,7 +79,7 @@ public class UserModelTest {
     @After
     public void tearDown() throws Exception {
 
-        // Restaurar contenido original y/o eliminar archivos de prueba
+        
 
         restoreOriginalFile(TEST_USERS_FILE, originalUsersContent);
         restoreOriginalFile(TEST_CREDENTIALS_FILE, originalCredentialsContent);

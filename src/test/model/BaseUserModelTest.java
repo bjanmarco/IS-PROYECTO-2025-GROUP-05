@@ -24,7 +24,7 @@ public class BaseUserModelTest {
         model = new TestableBaseUserModel();
         testFile = File.createTempFile("test", ".txt");
 
-        // Limpiar el archivo 
+        
 
         new FileWriter(testFile).close();
 
@@ -49,9 +49,9 @@ public class BaseUserModelTest {
     }
 
     @Test
-    public void testCredencialExiste() throws IOException {
+    public void testCedulaExiste() throws IOException {
 
-        // Preparar datos de prueba
+        
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(testFile))) {
             writer.write("123456");
@@ -59,30 +59,30 @@ public class BaseUserModelTest {
             writer.write("789012");
         }
         
-        assertTrue("Debe encontrar credencial existente", model.credencialExiste("123456", testFile));
-        assertTrue("Debe encontrar credencial existente", model.credencialExiste("789012", testFile));
-        assertFalse("No debe encontrar credencial inexistente", model.credencialExiste("000000", testFile));
+        assertTrue("Debe encontrar cedula existente", model.cedulaExiste("123456", testFile));
+        assertTrue("Debe encontrar cedula existente", model.cedulaExiste("789012", testFile));
+        assertFalse("No debe encontrar cedula inexistente", model.cedulaExiste("000000", testFile));
     }
 
     @Test
-    public void testCredencialExisteConArchivoInexistente() {
+    public void testCedulaExisteConArchivoInexistente() {
         File nonExistentFile = new File("nonexistent.txt");
         assertFalse("Debe retornar false para archivo que no existe", 
-                   model.credencialExiste("123456", nonExistentFile));
+                   model.cedulaExiste("123456", nonExistentFile));
     }
 
     @Test
     public void testAutenticar() throws IOException {
-        // Preparar datos para prueba
+        
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(testFile))) {
             writer.write("user1,pass1");
             writer.newLine();
             writer.write("user2,pass2");
         }
         
-        assertTrue("Debe autenticar credenciales correctas", 
+        assertTrue("Debe autenticar cedulaes correctas", 
                   model.autenticar("user1", "pass1", testFile));
-        assertTrue("Debe autenticar credenciales correctas", 
+        assertTrue("Debe autenticar cedulaes correctas", 
                   model.autenticar("user2", "pass2", testFile));
         assertFalse("No debe autenticar usuario incorrecto", 
                    model.autenticar("user3", "pass1", testFile));
@@ -98,13 +98,13 @@ public class BaseUserModelTest {
     }
 
     @Test
-    public void testGuardarCredencial() throws IOException {
-        assertTrue("Debe guardar credencial exitosamente", 
-                 model.guardarCredencial("newuser", "newpass", testFile));
+    public void testGuardarCedula() throws IOException {
+        assertTrue("Debe guardar cedula exitosamente", 
+                 model.guardarCedula("newuser", "newpass", testFile));
         
         try (BufferedReader reader = new BufferedReader(new FileReader(testFile))) {
             String line = reader.readLine();
-            assertEquals("Debe contener la credencial guardada", 
+            assertEquals("Debe contener la cedula guardada", 
                         "newuser,newpass", line);
         }
     }

@@ -1,24 +1,21 @@
 package views.Usuario;
 
+import views.Components.BotonAzul;
 import views.Components.RoundedPanel;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import views.Components.BotonAzul;
+import java.util.Map;
+import java.util.Locale;
+import controllers.UserControllers.MenuController;
 import models.Usuario;
 import models.Sesion;
 
 public class MenuView extends JFrame {
-
-    private JLabel dateLabel, titleLabel, credencialInfoLabel, saldoLabel;
-    private BotonAzul breakfastButton, lunchButton, volverButton;
+    private JLabel dateLabel, titleLabel, cedulaInfoLabel, precioLabel, saldoLabel;
+    private BotonAzul desayunoBtn, almuerzoBtn, volverBtn;
     private RoundedPanel daysPanel, formPanel, buttonPanel;
     private String currentMealType = "Desayuno";
-    private final String[] days = {"LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES"};
+    private MenuController controller;
 
     public MenuView() {
         initComponents();
@@ -27,7 +24,7 @@ public class MenuView extends JFrame {
 
     private void initComponents() {
         Usuario usuario = Sesion.getUsuarioActual();
-        setTitle("Sistema de Menú Semanal");
+        setTitle("Sistema de Menú Diario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setBackground(new Color(36, 136, 242));
         getContentPane().setLayout(null);
@@ -37,21 +34,26 @@ public class MenuView extends JFrame {
         formPanel.setLayout(null);
         getContentPane().add(formPanel);
 
-        dateLabel = new JLabel(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+        dateLabel = new JLabel(new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date()));
         dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         formPanel.add(dateLabel);
 
-        credencialInfoLabel = new JLabel("Credencial: " + usuario.getCredencial());
-        credencialInfoLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        credencialInfoLabel.setForeground(Color.BLACK);
-        formPanel.add(credencialInfoLabel);
+        cedulaInfoLabel = new JLabel("Cedula: " + usuario.getCedula());
+        cedulaInfoLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        cedulaInfoLabel.setForeground(Color.BLACK);
+        formPanel.add(cedulaInfoLabel);
 
         saldoLabel = new JLabel();
         saldoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         saldoLabel.setForeground(new Color(0, 153, 255));
         formPanel.add(saldoLabel);
 
-        titleLabel = new JLabel("Menú de la Semana");
+        precioLabel = new JLabel();
+        precioLabel.setFont(new Font("Arial", Font.BOLD, 17));
+        precioLabel.setForeground(new Color(0, 102, 102));
+        formPanel.add(precioLabel);
+
+        titleLabel = new JLabel("Menú del Día");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         formPanel.add(titleLabel);
@@ -61,95 +63,31 @@ public class MenuView extends JFrame {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
         formPanel.add(buttonPanel);
 
-        breakfastButton = new BotonAzul("Desayuno", new Dimension(140, 35));
-        lunchButton = new BotonAzul("Almuerzo", new Dimension(140, 35));
-        buttonPanel.add(breakfastButton);
-        buttonPanel.add(lunchButton);
+        desayunoBtn = new BotonAzul("Desayuno", new Dimension(140, 35));
+        almuerzoBtn = new BotonAzul("Almuerzo", new Dimension(140, 35));
+        buttonPanel.add(desayunoBtn);
+        buttonPanel.add(almuerzoBtn);
 
         daysPanel = new RoundedPanel(15);
-        daysPanel.setLayout(new GridLayout(1, 5, 15, 0));
+        daysPanel.setLayout(new BoxLayout(daysPanel, BoxLayout.Y_AXIS));
         daysPanel.setOpaque(false);
+        daysPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         formPanel.add(daysPanel);
 
-        volverButton = new BotonAzul("Volver al Dashboard", new Dimension(180, 35));
-        formPanel.add(volverButton);
+        volverBtn = new BotonAzul("Volver al Dashboard", new Dimension(180, 35));
+        formPanel.add(volverBtn);
 
-        addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent evt) {
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
                 updateLayout();
             }
         });
     }
 
-    public void setSaldo(double saldo) {
-        saldoLabel.setText(String.format("Saldo: %.2f$", saldo));
-    }
-
-    public void showMealMenu(String mealType) {
-        this.currentMealType = mealType;
-        daysPanel.removeAll();
-
-        for (String day : days) {
-            daysPanel.add(createDayColumn(day));
-        }
-
-        daysPanel.revalidate();
-        daysPanel.repaint();
-    }
-
-    private JPanel createDayColumn(String day) {
-        RoundedPanel column = new RoundedPanel(15);
-        column.setLayout(new BoxLayout(column, BoxLayout.Y_AXIS));
-        column.setBackground(new Color(240, 240, 240));
-        column.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-        JLabel dayLabel = new JLabel(day, SwingConstants.CENTER);
-        dayLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        dayLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel mealLabel = createCenteredLabel(currentMealType + ":<br>Plato Principal");
-        JLabel side1Label = createCenteredLabel("• Contorno #1");
-        JLabel side2Label = createCenteredLabel("• Contorno #2");
-        JLabel drinkLabel = createCenteredLabel("• Bebida");
-        JLabel dessertLabel = createCenteredLabel("• Postre");
-        JLabel statusLabel = createCenteredLabel("Estado: Disponible");
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
-
-        BotonAzul reserveButton = new BotonAzul("Reservar", new Dimension(120, 30));
-        reserveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        reserveButton.setActionCommand(day);  // Usado por el controlador
-        column.add(dayLabel);
-        column.add(Box.createRigidArea(new Dimension(0, 10)));
-        column.add(mealLabel);
-        column.add(side1Label);
-        column.add(side2Label);
-        column.add(drinkLabel);
-        column.add(dessertLabel);
-        column.add(Box.createRigidArea(new Dimension(0, 10)));
-        column.add(statusLabel);
-        column.add(Box.createRigidArea(new Dimension(0, 15)));
-        column.add(reserveButton);
-
-        return column;
-    }
-
-    public void setDesayunoListener(ActionListener listener) {
-        breakfastButton.addActionListener(listener);
-    }
-
-    public void setAlmuerzoListener(ActionListener listener) {
-        lunchButton.addActionListener(listener);
-    }
-
-    public void setVolverListener(ActionListener listener) {
-        volverButton.addActionListener(listener);
-    }
-
-    private JLabel createCenteredLabel(String text) {
-        JLabel label = new JLabel("<html><div style='text-align:center;'>" + text + "</div></html>");
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setFont(new Font("Arial", Font.PLAIN, 12));
-        return label;
+    private void setupWindow() {
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     private void updateLayout() {
@@ -157,17 +95,125 @@ public class MenuView extends JFrame {
         int height = getHeight() - 100;
 
         formPanel.setBounds(50, 50, width, height);
-        credencialInfoLabel.setBounds(width - 220, 20, 200, 20);
+        cedulaInfoLabel.setBounds(width - 220, 20, 200, 20);
         saldoLabel.setBounds(width - 220, 45, 200, 20);
+        precioLabel.setBounds(55, formPanel.getHeight() - 40, 300, 25);
         titleLabel.setBounds(0, 20, width, 30);
         buttonPanel.setBounds((width - 350) / 2, 80, 350, 50);
-        daysPanel.setBounds((width - 800) / 2, 150, 800, 220);
-        volverButton.setBounds(width - 200, height - 50, 180, 35);
+        daysPanel.setBounds((width - 500) / 2, 150, 500, 280);
+        volverBtn.setBounds(width - 200, height - 50, 180, 35);
+        dateLabel.setBounds(55, 45, 100, 20);
     }
 
-    private void setupWindow() {
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setVisible(true);
+    public void showMealMenu(String tipo, Map<String, Map<String, String>> menusPorDia) {
+    currentMealType = tipo;
+    daysPanel.removeAll();
+
+    Usuario usuario = Sesion.getUsuarioActual();
+
+    for (Map.Entry<String, Map<String, String>> entry : menusPorDia.entrySet()) {
+        String dia = entry.getKey();
+        Map<String, String> menu = entry.getValue();
+
+        RoundedPanel card = new RoundedPanel(15);
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBackground(new Color(240, 240, 240));
+        card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titulo = new JLabel("MENÚ DE " + dia.toUpperCase(), SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 16));
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        card.add(titulo);
+        card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+
+        
+        String[] ordenElementos = {"Plato principal", "Contorno 1", "Contorno 2", "Bebida", "Postre"};
+        
+        for (String elemento : ordenElementos) {
+            if (menu.containsKey(elemento)) {
+                JLabel item = new JLabel("• " + elemento + ": " + menu.get(elemento));
+                item.setFont(new Font("Arial", Font.PLAIN, 14));
+                item.setAlignmentX(Component.CENTER_ALIGNMENT);
+                contentPanel.add(item);
+            }
+        }
+
+        card.add(contentPanel);
+        card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JLabel statusLabel = new JLabel();
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        boolean habilitado = Boolean.parseBoolean(menu.getOrDefault("habilitado", "true"));
+
+        boolean yaReservado = (tipo.equalsIgnoreCase("Desayuno") && usuario.tieneDesayuno()) ||
+                              (tipo.equalsIgnoreCase("Almuerzo") && usuario.tieneAlmuerzo());
+
+        JButton reserveButton = new BotonAzul("Reservar", new Dimension(120, 30));
+        reserveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        if (!habilitado) {
+            reserveButton.setText("Terminado");
+            reserveButton.setEnabled(false);
+            statusLabel.setText("Estado: Terminado");
+            statusLabel.setForeground(Color.GRAY);
+        } else if (yaReservado) {
+            reserveButton.setText("Reservado");
+            reserveButton.setEnabled(false);
+            statusLabel.setText("Estado: Reservado");
+            statusLabel.setForeground(new Color(0, 153, 0));
+        } else {
+            statusLabel.setText("Estado: Disponible");
+            statusLabel.setForeground(new Color(0, 102, 204));
+            reserveButton.addActionListener(e -> {
+                if (controller != null) {
+                    controller.reservarComida(currentMealType);
+                }
+            });
+        }
+
+        card.add(statusLabel);
+        card.add(Box.createRigidArea(new Dimension(0, 15)));
+        card.add(reserveButton);
+
+        daysPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        daysPanel.add(card);
+    }
+
+    daysPanel.revalidate();
+    daysPanel.repaint();
+}
+
+    
+    public void setDesayunoListener(java.awt.event.ActionListener listener) {
+        desayunoBtn.addActionListener(listener);
+    }
+
+    public void setAlmuerzoListener(java.awt.event.ActionListener listener) {
+        almuerzoBtn.addActionListener(listener);
+    }
+
+    public void setVolverListener(java.awt.event.ActionListener listener) {
+        volverBtn.addActionListener(listener);
+    }
+
+    
+    public void setPrecioBandeja(double precio) {
+        precioLabel.setText(String.format("Precio por bandeja: %.2fBs", precio));
+    }
+
+    public void setSaldo(double saldo) {
+        saldoLabel.setText(String.format("Saldo: %.2fBs", saldo));
+    }
+
+    
+    public void setController(MenuController controller) {
+        this.controller = controller;
     }
 }

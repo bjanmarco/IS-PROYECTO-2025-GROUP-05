@@ -1,0 +1,5 @@
+Lunes,Desayuno,empanada,pan,guasacaca,malta,fruta
+Lunes,Almuerzo,carne guisada,arroz,tajadas,jugo de guayaba,brownie
+Miércoles,Almuerzo,carne en vara,arroz,papas fritas,jugo de fresa,galleta
+Martes,Desayuno,arepa de queso,frutas mixtas,diablito,juego de mango,gelatina
+Jueves,Almuerzo,pollo frito,papas fritas,vegetales mixtos,ponche de frutas,rol de canela

@@ -2,11 +2,13 @@ package controllers.UserControllers;
 
 import models.UserModel;
 import controllers.AppController;
-
 import models.Sesion;
 import models.Usuario;
 import views.Usuario.LoginView;
+import views.Usuario.VerificacionIdentidadLoginView;
 
+import javax.swing.*;
+import java.io.File;
 
 public class LoginController {
     private final UserModel userModel;
@@ -29,15 +31,15 @@ public class LoginController {
     }
 
     public void intentarLogin() {
-        String credencial = view.getCredencial();
+        String cedula = view.getCedula();
         String contrasena = view.getContrasena();
 
-        if (!userModel.esCredencialValida(credencial)) {
+        if (!userModel.esCedulaValida(cedula)) {
             view.mostrarError("La cédula no es válida.");
             return;
         }
 
-        if (!userModel.usuarioYaRegistrado(credencial)) {
+        if (!userModel.usuarioYaRegistrado(cedula)) {
             view.mostrarError("El usuario no está registrado.");
             return;
         }
@@ -47,15 +49,50 @@ public class LoginController {
             return;
         }
 
-        if (!userModel.autenticarUsuario(credencial, contrasena)) {
+        if (!userModel.autenticarUsuario(cedula, contrasena)) {
             view.mostrarError("Contraseña incorrecta.");
             return;
         }
 
-        Sesion.iniciarSesion(new Usuario(credencial, userModel.obtenerSaldo(credencial)));
-        view.mostrarMensaje("Inicio de sesión exitoso.");
-        view.dispose();
-        new DashboardUserController();
+        
+        Usuario usuario = userModel.obtenerUsuario(cedula);
+        Sesion.iniciarSesion(usuario);
+
+        
+        VerificacionIdentidadLoginView verificacionView = new VerificacionIdentidadLoginView();
+        verificacionView.setVisible(true);
+
+        verificacionView.addVerificarListener(e -> {
+            if (verificarIdentidadConArchivo(usuario, verificacionView)) {
+                verificacionView.dispose();
+                view.dispose(); 
+                view.mostrarMensaje("Inicio de sesión exitoso.");
+                new DashboardUserController();
+            }
+        });
+    }
+
+    private boolean verificarIdentidadConArchivo(Usuario usuario, JFrame parentView) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Selecciona tu imagen de identidad");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+
+        int result = fileChooser.showOpenDialog(parentView);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            JOptionPane.showMessageDialog(parentView, "Verificación cancelada.", "Verificación", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        File archivoSeleccionado = fileChooser.getSelectedFile();
+        String nombreArchivoSeleccionado = archivoSeleccionado.getName().trim();
+        String nombreArchivoUsuario = usuario.getFoto() != null ? usuario.getFoto().trim() : "";
+
+        if (!nombreArchivoSeleccionado.equals(nombreArchivoUsuario)) {
+            JOptionPane.showMessageDialog(parentView, "Verificación fallida. Imagen no coincide con la registrada.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
     }
 
     public void irARegistro() {

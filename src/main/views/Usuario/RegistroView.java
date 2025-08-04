@@ -9,12 +9,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class RegistroView extends JFrame {
-    private JTextField credencialField;
+    private JTextField cedulaField;
     private JPasswordField passwordField;
     private JPasswordField confirmarPasswordField;
     public JButton registerButton;
     public JButton volverLoginButton;
-    private JLabel titleLabel, credencialLabel, passwordLabel, confirmarLabel, volverLoginLabel;
+    private JLabel titleLabel, cedulaLabel, passwordLabel, confirmarLabel, volverLoginLabel;
     private RoundedPanel formPanel;
     public BotonAzul volverMainButton;
 
@@ -37,12 +37,12 @@ public class RegistroView extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         formPanel.add(titleLabel);
 
-        credencialLabel = new JLabel("Credencial:");
-        credencialLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(credencialLabel);
+        cedulaLabel = new JLabel("Cedula:");
+        cedulaLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        formPanel.add(cedulaLabel);
 
-        credencialField = UIFactory.crearCampoTextoRedondeado(15);
-        formPanel.add(credencialField);
+        cedulaField = UIFactory.crearCampoTextoRedondeado(15);
+        formPanel.add(cedulaField);
 
         passwordLabel = new JLabel("Contraseña:");
         passwordLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -114,8 +114,8 @@ public class RegistroView extends JFrame {
         titleLabel.setBounds((formWidth - 100) / 2, startY, 100, 30);
         int y = startY + 30 + spacing;
 
-        credencialLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
-        credencialField.setBounds(centerXField, y, fieldWidth, fieldHeight);
+        cedulaLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
+        cedulaField.setBounds(centerXField, y, fieldWidth, fieldHeight);
         y += fieldHeight + spacing;
 
         passwordLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
@@ -138,8 +138,8 @@ public class RegistroView extends JFrame {
         volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
 
-    public String getCredencial() {
-        return credencialField.getText().trim();
+    public String getCedula() {
+        return cedulaField.getText().trim();
     }
 
     public String getContrasena() {

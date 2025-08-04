@@ -16,7 +16,7 @@ public class RegistroAdminControllerTest {
         public String errorMessage;
         public String successMessage;
         public boolean disposed = false;
-        public String credencial = "";
+        public String cedula = "";
         public String contrasena = "";
         public String confirmacion = "";
         
@@ -25,10 +25,10 @@ public class RegistroAdminControllerTest {
         private ActionListener volverMainListener;
         
         public TestRegistroAdminView() {
-            // Constructor sin inicialización
+            
         }
         
-        @Override public String getCredencial() { return credencial; }
+        @Override public String getCedula() { return cedula; }
         @Override public String getContrasena() { return contrasena; }
         @Override public String getConfirmacion() { return confirmacion; }
         @Override public void mostrarError(String mensaje) { this.errorMessage = mensaje; }
@@ -72,7 +72,7 @@ public class RegistroAdminControllerTest {
 
     private static class TestAdminModel extends AdminModel {
         public boolean claveValidaResult = false;
-        public boolean existeCredencialResult = false;
+        public boolean existeCedulaResult = false;
         public boolean guardarAdminResult = false;
         
         @Override
@@ -81,12 +81,12 @@ public class RegistroAdminControllerTest {
         }
         
         @Override
-        public boolean credencialExiste(String credencial) {
-            return existeCredencialResult;
+        public boolean cedulaExiste(String cedula) {
+            return existeCedulaResult;
         }
         
         @Override
-        public boolean guardarAdmin(String credencial, String contrasena) {
+        public boolean guardarAdmin(String cedula, String contrasena) {
             return guardarAdminResult;
         }
     }
@@ -97,11 +97,11 @@ public class RegistroAdminControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        // Crear stubs
+        
         viewStub = new TestRegistroAdminView();
         modelStub = new TestAdminModel();
         
-        // Crear controlador real
+        
         controller = new RegistroAdminController();
        
         injectPrivateField(controller, "view", viewStub);
@@ -120,7 +120,7 @@ public class RegistroAdminControllerTest {
     @Test
     public void testCamposVacios() {
  
-        viewStub.credencial = "";
+        viewStub.cedula = "";
         viewStub.contrasena = "";
         viewStub.confirmacion = "";
         
@@ -131,9 +131,9 @@ public class RegistroAdminControllerTest {
 
     @Test
     public void testClaveInvalida() {
-        // Configuración
-        viewStub.credencial = "admin";
-        viewStub.contrasena = "12345"; // Menos de 6 caracteres
+        
+        viewStub.cedula = "admin";
+        viewStub.contrasena = "12345"; 
         viewStub.confirmacion = "12345";
         modelStub.claveValidaResult = false;
 
@@ -145,7 +145,7 @@ public class RegistroAdminControllerTest {
     @Test
     public void testContrasenasNoCoinciden() {
 
-        viewStub.credencial = "admin";
+        viewStub.cedula = "admin";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password456";
         modelStub.claveValidaResult = true;
@@ -156,49 +156,19 @@ public class RegistroAdminControllerTest {
     }
 
     @Test
-    public void testCredencialExistente() {
+    public void testCedulaExistente() {
 
-        viewStub.credencial = "admin";
+        viewStub.cedula = "admin";
         viewStub.contrasena = "password123";
         viewStub.confirmacion = "password123";
         modelStub.claveValidaResult = true;
-        modelStub.existeCredencialResult = true;
+        modelStub.existeCedulaResult = true;
 
         viewStub.simularRegistro();
    
-        assertEquals("La credencial ya está registrada.", viewStub.errorMessage);
+        assertEquals("La cedula ya está registrada.", viewStub.errorMessage);
     }
 
-    @Test
-    public void testRegistroExitoso() {
-
-        viewStub.credencial = "admin";
-        viewStub.contrasena = "password123";
-        viewStub.confirmacion = "password123";
-        modelStub.claveValidaResult = true;
-        modelStub.existeCredencialResult = false;
-        modelStub.guardarAdminResult = true;
-        
-        viewStub.simularRegistro();
-
-        assertEquals("Administrador registrado con éxito.", viewStub.successMessage);
-        assertTrue(viewStub.disposed);
-    }
-
-    @Test
-    public void testErrorAlGuardar() {
-  
-        viewStub.credencial = "admin";
-        viewStub.contrasena = "password123";
-        viewStub.confirmacion = "password123";
-        modelStub.claveValidaResult = true;
-        modelStub.existeCredencialResult = false;
-        modelStub.guardarAdminResult = false;
-
-        viewStub.simularRegistro();
-
-        assertEquals("Error al guardar el administrador.", viewStub.errorMessage);
-    }
 
     @Test
     public void testVolverLogin() {

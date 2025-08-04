@@ -1,6 +1,7 @@
-30212327,123456,5.0
-567890,654321,28.0
-13122332,987654,63.70
-23094212,12345678,58.25
-900000,1234567,6.40
-30212326,123456,0.0
+30212327,123456,894.06,maria peres,profesor,fotico.jpg,false,true
+567890,654321,60.00,ronaldo antonio,trabajador,foton.png,false,false
+13122332,987654,63.70,jose antonio,estudiante,foto123456.jpg,false,false
+23094212,12345678,58.25,claudia isabela,estudiante,foticho.png,false,false
+900000,1234567,3.65,sofia vergara,trabajador,pic189.jpg,false,false
+30212326,123456,0.0,angel romero,estudiante,picture987.png,false,false
+31187193,123456,0.0,miguel patiño,trabajador,foton33.png,false,false

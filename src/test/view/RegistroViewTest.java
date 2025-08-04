@@ -27,14 +27,14 @@ public class RegistroViewTest {
 
     @Test
     public void testComponentesInicializados() {
-        assertNotNull("Campo de credencial debe estar inicializado", view.getCredencial());
+        assertNotNull("Campo de cedula debe estar inicializado", view.getCedula());
         assertNotNull("Campo de contraseña debe estar inicializado", view.getContrasena());
         assertNotNull("Campo de confirmación debe estar inicializado", view.getConfirmacion());
     }
 
     @Test
     public void testGettersCamposVacios() {
-        assertEquals("Credencial debe estar vacío al inicio", "", view.getCredencial());
+        assertEquals("Cedula debe estar vacío al inicio", "", view.getCedula());
         assertEquals("Contraseña debe estar vacío al inicio", "", view.getContrasena());
         assertEquals("Confirmación debe estar vacío al inicio", "", view.getConfirmacion());
     }
@@ -45,7 +45,7 @@ public class RegistroViewTest {
         
         view.setRegistroListener(_ -> listenerCalled[0] = true);
         
-        // Simular click en el botón de registro
+        
         for (ActionListener listener : view.registerButton.getActionListeners()) {
             listener.actionPerformed(new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, ""));
         }
@@ -59,7 +59,7 @@ public class RegistroViewTest {
         
         view.setVolverLoginListener(_ -> listenerCalled[0] = true);
         
-        // Simular click en el botón de volver a login
+        
         for (ActionListener listener : view.volverLoginButton.getActionListeners()) {
             listener.actionPerformed(new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, ""));
         }
@@ -73,7 +73,7 @@ public class RegistroViewTest {
         
         view.setVolverMainListener(_ -> listenerCalled[0] = true);
         
-        // Simular click en el botón de volver al main
+        
         for (ActionListener listener : view.volverMainButton.getActionListeners()) {
             listener.actionPerformed(new ActionEvent(new JButton(), ActionEvent.ACTION_PERFORMED, ""));
         }

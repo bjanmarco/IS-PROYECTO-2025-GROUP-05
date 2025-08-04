@@ -80,7 +80,7 @@ src/main/
 
 ### Datos de Prueba
 - **Admin**: Contraseña de acceso: `admin123`
-- **Usuarios**: Registra nuevos usuarios o usa credenciales existentes
+- **Usuarios**: Registra nuevos usuarios o usa cedulaes existentes
 
 ## 🤝 Contribuyendo
 

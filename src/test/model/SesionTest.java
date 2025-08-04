@@ -9,9 +9,33 @@ import static org.junit.Assert.*;
 
 public class SesionTest {
     
-    private final Usuario usuarioPrueba = new Usuario("admin123", 0.0);
+    private Usuario usuarioPrueba;
+    private Usuario otroUsuario;
 
     @Before
+    public void setUp() {
+        
+        usuarioPrueba = new Usuario(
+            "admin123", 
+            0.0, 
+            "Administrador Principal", 
+            "admin", 
+            "admin.jpg", 
+            false, 
+            false
+        );
+        
+        otroUsuario = new Usuario(
+            "567890", 
+            100.0, 
+            "Usuario Normal", 
+            "user", 
+            "user.jpg", 
+            true, 
+            false
+        );
+    }
+
     @After
     public void limpiarSesion() {
         Sesion.cerrarSesion();
@@ -21,7 +45,8 @@ public class SesionTest {
     public void testIniciarYCerrarSesion() {
         Sesion.iniciarSesion(usuarioPrueba);
         assertNotNull(Sesion.getUsuarioActual());
-        assertEquals("admin123", Sesion.getUsuarioActual().getCredencial());
+        assertEquals("admin123", Sesion.getUsuarioActual().getCedula());
+        assertEquals("Administrador Principal", Sesion.getUsuarioActual().getNombreApellido());
 
         Sesion.cerrarSesion();
         assertNull(Sesion.getUsuarioActual());
@@ -35,9 +60,20 @@ public class SesionTest {
     @Test
     public void testReemplazarUsuarioEnSesion() {
         Sesion.iniciarSesion(usuarioPrueba);
-        Usuario nuevoUsuario = new Usuario("567890", 100.0);
+        Sesion.iniciarSesion(otroUsuario);
         
-        Sesion.iniciarSesion(nuevoUsuario);
-        assertEquals("567890", Sesion.getUsuarioActual().getCredencial());
+        assertEquals("567890", Sesion.getUsuarioActual().getCedula());
+        assertEquals(100.0, Sesion.getUsuarioActual().getSaldo(), 0.001);
+        assertTrue(Sesion.getUsuarioActual().tieneDesayuno());
+    }
+
+    @Test
+    public void testSetUsuarioActual() {
+        Sesion.setUsuarioActual(usuarioPrueba);
+        assertNotNull(Sesion.getUsuarioActual());
+        assertEquals("admin123", Sesion.getUsuarioActual().getCedula());
+        
+        Sesion.setUsuarioActual(otroUsuario);
+        assertEquals("567890", Sesion.getUsuarioActual().getCedula());
     }
 }

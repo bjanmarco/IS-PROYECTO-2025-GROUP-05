@@ -1,31 +1,32 @@
 package test.controller;
 
-import java.awt.event.ActionListener;
-
-
-import javax.swing.JButton;
-
-import controllers.AdminControllers.DashboardAdminController;
 import static org.junit.Assert.*;
-
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
+import controllers.AdminControllers.DashboardAdminController;
 import models.Sesion;
 import models.Usuario;
 import views.Admin.DashboardAdminView;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import java.time.LocalDateTime;
-
 
 public class DashboardAdminControllerTest {
     
     private static class TestDashboardAdminView extends DashboardAdminView {
-        public String credencialSet;
+        public String cedulaSet;
         public LocalDateTime fechaSet;
         public boolean vistaCerrada;
         public String mensajeError;
+        public ActionListener gestionarMenuListener;
+        public ActionListener verificarDesayunoListener;
+        public ActionListener cargaCostosListener;
+        public ActionListener cerrarSesionListener;
         
         @Override
-        public void setCredencial(String credencial) {
-            this.credencialSet = credencial;
+        public void setCedula(String cedula) {
+            this.cedulaSet = cedula;
         }
         
         @Override
@@ -42,123 +43,121 @@ public class DashboardAdminControllerTest {
         public void dispose() {
             this.vistaCerrada = true;
         }
-    }
-    
-    // Datos de prueba
-    private static final String CREDENCIAL_VALIDA = "admin123";
-
-    @Test
-    public void testBotones_ListenersConfigurados() {
-
-        class ButtonTestView extends TestDashboardAdminView {
-            public int consultarInsumosListeners = 0;
-            public int gestionarMenuListeners = 0;
-            public int generarReporteListeners = 0;
-            public int cargaCostosListeners = 0;
-            public int cerrarSesionListeners = 0;
-
-            @Override
-            public JButton getConsultarInsumosBtn() {
-                return new JButton() {
-                    @Override
-                    public void addActionListener(ActionListener l) {
-                        consultarInsumosListeners++;
-                    }
-                };
-            }
-
-            @Override
-            public JButton getGestionarMenuBtn() {
-                return new JButton() {
-                    @Override
-                    public void addActionListener(ActionListener l) {
-                        gestionarMenuListeners++;
-                    }
-                };
-            }
-
-            @Override
-            public JButton getGenerarReporteBtn() {
-                return new JButton() {
-                    @Override
-                    public void addActionListener(ActionListener l) {
-                        generarReporteListeners++;
-                    }
-                };
-            }
-
-            @Override
-            public JButton getCargaCostosFijosBtn() {
-                return new JButton() {
-                    @Override
-                    public void addActionListener(ActionListener l) {
-                        cargaCostosListeners++;
-                    }
-                };
-            }
-
-            @Override
-            public JButton getCerrarSesionBtn() {
-                return new JButton() {
-                    @Override
-                    public void addActionListener(ActionListener l) {
-                        cerrarSesionListeners++;
-                    }
-                };
-            }
+        
+        @Override
+        public JButton getGestionarMenuBtn() {
+            return new JButton() {
+                @Override
+                public void addActionListener(ActionListener l) {
+                    gestionarMenuListener = l;
+                }
+            };
         }
-
-        ButtonTestView buttonView = new ButtonTestView();
-        new DashboardAdminController(buttonView);
-
-        assertEquals(1, buttonView.consultarInsumosListeners);
-        assertEquals(1, buttonView.gestionarMenuListeners);
-        assertEquals(1, buttonView.generarReporteListeners);
-        assertEquals(1, buttonView.cargaCostosListeners);
-        assertEquals(1, buttonView.cerrarSesionListeners);
-    }
-
-@Test
-public void testConstructor_VistaNull() {
-    Sesion.setUsuarioActual(new Usuario(CREDENCIAL_VALIDA));
-    
-    try {
-        new DashboardAdminController(null);
-        fail("Debería haber lanzado NullPointerException");
-    } catch (NullPointerException e) {
-        assertTrue(e.getMessage().contains("view"));
-    }
-}
-
-@Test
-public void testConstructor_SesionConUsuarioInvalido() {
-
-    final String credencialInvalida = "";
-    Sesion.setUsuarioActual(new Usuario(credencialInvalida));
-    
-    class VistaMock extends TestDashboardAdminView {
-        public boolean listenersAdded = false;
+        
+        @Override
+        public JButton getVerificarDesayunoBtn() {
+            return new JButton() {
+                @Override
+                public void addActionListener(ActionListener l) {
+                    verificarDesayunoListener = l;
+                }
+            };
+        }
+        
+        @Override
+        public JButton getCargaCostosFijosBtn() {
+            return new JButton() {
+                @Override
+                public void addActionListener(ActionListener l) {
+                    cargaCostosListener = l;
+                }
+            };
+        }
         
         @Override
         public JButton getCerrarSesionBtn() {
-            JButton btn = new JButton();
-            btn.addActionListener(_ -> {});
-            listenersAdded = true;
-            return btn;
+            return new JButton() {
+                @Override
+                public void addActionListener(ActionListener l) {
+                    cerrarSesionListener = l;
+                }
+            };
         }
     }
     
-    VistaMock vistaMock = new VistaMock();
+    @Before
+    public void setUp() {
+        Sesion.setUsuarioActual(new Usuario(
+            "admin123", 
+            0.0, 
+            "Admin", 
+            "admin", 
+            "admin.jpg", 
+            false, 
+            false
+        ));
+    }
     
-    // Ejecución
-    new DashboardAdminController(vistaMock);
+    @After
+    public void tearDown() {
+        Sesion.cerrarSesion();
+    }
     
-    // Verificaciones
-    assertEquals(credencialInvalida, vistaMock.credencialSet);
-    assertNull(vistaMock.mensajeError);
-    assertNotNull(vistaMock.fechaSet);
-    assertFalse(vistaMock.vistaCerrada);
-    assertTrue(vistaMock.listenersAdded);
-}
+    @Test
+    public void testConstructorConVistaValida() {
+        TestDashboardAdminView view = new TestDashboardAdminView();
+        new DashboardAdminController(view);
+        
+        assertEquals("admin123", view.cedulaSet);
+        assertNotNull(view.fechaSet);
+        assertNull(view.mensajeError);
+        assertFalse(view.vistaCerrada);
+        
+        
+        assertNotNull(view.gestionarMenuListener);
+        assertNotNull(view.verificarDesayunoListener);
+        assertNotNull(view.cargaCostosListener);
+        assertNotNull(view.cerrarSesionListener);
+    }
     
+    @Test
+    public void testConstructorConVistaNull() {
+        try {
+            new DashboardAdminController(null);
+            fail("Debería haber lanzado NullPointerException");
+        } catch (NullPointerException e) {
+            assertTrue(e.getMessage().contains("view"));
+        }
+    }
+    
+    @Test
+    public void testConstructorSinSesion() {
+        Sesion.cerrarSesion();
+        TestDashboardAdminView view = new TestDashboardAdminView();
+        new DashboardAdminController(view);
+        
+        assertNull(view.cedulaSet);
+        assertNotNull(view.mensajeError);
+        assertEquals("No hay una sesión activa.", view.mensajeError);
+        assertTrue(view.vistaCerrada);
+    }
+
+    
+    @Test
+    public void testCerrarSesion() {
+        TestDashboardAdminView view = new TestDashboardAdminView();
+        DashboardAdminController controller = new DashboardAdminController(view);
+        
+        view.cerrarSesionListener.actionPerformed(null);
+        
+        assertNull(Sesion.getUsuarioActual());
+        assertTrue(view.vistaCerrada);
+    }
+    
+    @Test
+    public void testConstructorDefault() {
+        DashboardAdminController controller = new DashboardAdminController();
+        
+        assertTrue(true);
+    }
 }

@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 
 public class DashboardAdminViewTest {
         private static class TestDashboardAdminView extends DashboardAdminView {
-        public String credencialSet;
+        public String cedulaSet;
         public LocalDateTime fechaSet;
         public boolean vistaCerrada;
         public String mensajeError;
         
         @Override
-        public void setCredencial(String credencial) {
-            this.credencialSet = credencial;
+        public void setCedula(String cedula) {
+            this.cedulaSet = cedula;
         }
         
         @Override
@@ -39,8 +39,8 @@ public class DashboardAdminViewTest {
         }
     }
     
-    // Datos de prueba
-    private static final String CREDENCIAL_VALIDA = "admin123";
+    
+    private static final String CEDULA_VALIDA = "admin123";
     private static final String MENSAJE_ERROR_SESION = "No hay una sesión activa.";
     
     private TestDashboardAdminView vistaPrueba;
@@ -57,11 +57,11 @@ public class DashboardAdminViewTest {
     
     @Test
     public void testConstructorConSesionActiva_ConfiguraVistaCorrectamente() {
-        Sesion.setUsuarioActual(new Usuario(CREDENCIAL_VALIDA));
+        Sesion.setUsuarioActual(new Usuario(CEDULA_VALIDA));
         
         new DashboardAdminController(vistaPrueba);
         
-        assertEquals(CREDENCIAL_VALIDA, vistaPrueba.credencialSet);
+        assertEquals(CEDULA_VALIDA, vistaPrueba.cedulaSet);
         assertNotNull(vistaPrueba.fechaSet);
         assertNull(vistaPrueba.mensajeError);
         assertFalse(vistaPrueba.vistaCerrada);
@@ -75,13 +75,13 @@ public class DashboardAdminViewTest {
         
         assertEquals(MENSAJE_ERROR_SESION, vistaPrueba.mensajeError);
         assertTrue(vistaPrueba.vistaCerrada);
-        assertNull(vistaPrueba.credencialSet);
+        assertNull(vistaPrueba.cedulaSet);
         assertNull(vistaPrueba.fechaSet);
     }
     
     @Test
     public void testCerrarSesion_CierraSesionYVista() {
-        Sesion.setUsuarioActual(new Usuario(CREDENCIAL_VALIDA));
+        Sesion.setUsuarioActual(new Usuario(CEDULA_VALIDA));
         DashboardAdminController controller = new DashboardAdminController(vistaPrueba);
 
         controller.cerrarSesion();
@@ -92,13 +92,13 @@ public class DashboardAdminViewTest {
 
     @Test
     public void testCargaCostosFijos_NoProduceErrores() {
-    Sesion.setUsuarioActual(new Usuario(CREDENCIAL_VALIDA));
+    Sesion.setUsuarioActual(new Usuario(CEDULA_VALIDA));
     
     DashboardAdminController controller = new DashboardAdminController(vistaPrueba) {
         @Override
         public void cargaCostosFijos() {
 
-        // No hacer nada (override para evitar que cree la vista real)
+        
         
         }
     };

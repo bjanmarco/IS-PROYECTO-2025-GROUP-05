@@ -1,4 +1,3 @@
-
 import javax.swing.SwingUtilities;
 import controllers.AppController;
 

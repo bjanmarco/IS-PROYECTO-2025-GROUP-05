@@ -8,11 +8,11 @@ import views.Components.RoundedPanel;
 import views.Components.UIFactory;
 
 public class LoginView extends JFrame {
-    private JTextField credencialField;
+    private JTextField cedulaField;
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton volverRegistroButton;
-    private JLabel titleLabel, credencialLabel, passwordLabel, volverRegistroLabel;
+    private JLabel titleLabel, cedulaLabel, passwordLabel, volverRegistroLabel;
     private RoundedPanel formPanel;
     private BotonAzul volverMainButton;
 
@@ -35,12 +35,12 @@ public class LoginView extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         formPanel.add(titleLabel);
 
-        credencialLabel = new JLabel("Credencial:");
-        credencialLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(credencialLabel);
+        cedulaLabel = new JLabel("Cedula:");
+        cedulaLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        formPanel.add(cedulaLabel);
 
-        credencialField = UIFactory.crearCampoTextoRedondeado(15);
-        formPanel.add(credencialField);
+        cedulaField = UIFactory.crearCampoTextoRedondeado(15);
+        formPanel.add(cedulaField);
 
         passwordLabel = new JLabel("Contraseña:");
         passwordLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -100,8 +100,8 @@ public class LoginView extends JFrame {
         titleLabel.setBounds((formWidth - 80) / 2, startY, 150, 30);
         int y = startY + 30 + spacing;
 
-        credencialLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
-        credencialField.setBounds(centerXField, y, fieldWidth, fieldHeight);
+        cedulaLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
+        cedulaField.setBounds(centerXField, y, fieldWidth, fieldHeight);
         y += fieldHeight + spacing;
 
         passwordLabel.setBounds(centerXLabel, y, labelWidth, fieldHeight);
@@ -119,8 +119,8 @@ public class LoginView extends JFrame {
         volverMainButton.setBounds(leftX, bottomY, 200, 35);
     }
 
-    public String getCredencial() {
-        return credencialField.getText().trim();
+    public String getCedula() {
+        return cedulaField.getText().trim();
     }
 
     public String getContrasena() {
